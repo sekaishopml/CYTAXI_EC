@@ -1,0 +1,42 @@
+{
+  "dashboard": {
+    "title": "CYTAXI - Platform Overview",
+    "panels": [
+      {
+        "title": "API Gateway Health",
+        "type": "stat",
+        "targets": [{ "expr": "up{job=\"api-gateway\"}" }]
+      },
+      {
+        "title": "Active Trips",
+        "type": "gauge",
+        "targets": [{ "expr": "trips_active" }]
+      },
+      {
+        "title": "Revenue (24h)",
+        "type": "stat",
+        "targets": [{ "expr": "revenue_total" }],
+        "fieldConfig": { "unit": "USD" }
+      },
+      {
+        "title": "Active Drivers",
+        "type": "stat",
+        "targets": [{ "expr": "drivers_active" }]
+      },
+      {
+        "title": "Engine Status",
+        "type": "table",
+        "targets": [
+          { "expr": "up", "legendFormat": "{{job}}" }
+        ]
+      },
+      {
+        "title": "Request Rate (Gateway)",
+        "type": "graph",
+        "targets": [{ "expr": "rate(http_requests_total[5m])" }]
+      }
+    ],
+    "timezone": "UTC",
+    "refresh": "10s"
+  }
+}

@@ -1,0 +1,64 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+rule_files: []
+
+scrape_configs:
+  - job_name: "api-gateway"
+    metrics_path: /health
+    static_configs:
+      - targets: ["gateway:8000"]
+
+  - job_name: "trip-engine"
+    static_configs:
+      - targets: ["trip:8087"]
+
+  - job_name: "pricing-engine"
+    static_configs:
+      - targets: ["pricing:8088"]
+
+  - job_name: "payment-engine"
+    static_configs:
+      - targets: ["payment:8091"]
+
+  - job_name: "matching-engine"
+    static_configs:
+      - targets: ["matching:8089"]
+
+  - job_name: "customer-engine"
+    static_configs:
+      - targets: ["customer:8085"]
+
+  - job_name: "driver-engine"
+    static_configs:
+      - targets: ["driver:8086"]
+
+  - job_name: "notification-engine"
+    static_configs:
+      - targets: ["notification:8090"]
+
+  - job_name: "trust-engine"
+    static_configs:
+      - targets: ["trust:8092"]
+
+  - job_name: "analytics-engine"
+    static_configs:
+      - targets: ["analytics:8093"]
+
+  - job_name: "admin-engine"
+    static_configs:
+      - targets: ["admin:8094"]
+
+  - job_name: "postgres"
+    static_configs:
+      - targets: ["postgres-exporter:9187"]
+
+  - job_name: "redis"
+    static_configs:
+      - targets: ["redis-exporter:9121"]
