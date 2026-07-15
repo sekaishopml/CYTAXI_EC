@@ -78,10 +78,10 @@ export function FormState({ name, setName, destQuery, setDestQuery, destSuggesti
       {/* Buscar viaje */}
       <button onClick={onConfirm} disabled={!dest || loading}
         style={{
-          width: "100%", height: 42, background: G, color: "#fff",
+          width: "100%", height: 42, background: "#000000", color: "#fff",
           borderRadius: 9999, display: "flex", alignItems: "center", justifyContent: "center",
           fontSize: 15, fontWeight: 600, fontFamily: "Inter", border: "none", cursor: "pointer",
-          boxShadow: "0px 4px 12px rgba(0,108,73,0.3)",
+          boxShadow: "0px 4px 12px rgba(0,0,0,0.2)",
           opacity: (!dest || loading) ? 0.4 : 1, transition: "opacity 0.2s"
         }}
       >{loading ? "Calculando..." : "Buscar viaje"}</button>
