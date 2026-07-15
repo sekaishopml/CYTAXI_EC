@@ -8,6 +8,7 @@ use (
 	./backend/engines/geospatial
 	./backend/engines/matching
 	./backend/engines/mobility
+	./backend/engines/notification
 	./backend/engines/policy
 	./backend/engines/pricing
 	./backend/engines/trip
