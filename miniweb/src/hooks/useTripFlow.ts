@@ -4,14 +4,14 @@ import { TripState, Place, FareBreakdown, TrackingUpdate } from "@/types";
 import { searchPlaces, calculateRoute, estimateFare, requestTrip } from "@/services/api";
 import { subscribeToTrip } from "@/services/tracking";
 
+import { PickUpStep } from "@/components/states/PickUpStep";
 import { FormState } from "@/components/states/FormState";
 import { ConfirmState } from "@/components/states/ConfirmState";
 import { TrackingState } from "@/components/states/TrackingState";
 import { CompletedState } from "@/components/states/CompletedState";
 
 export function useTripFlow() {
-  const [state, setState] = useState<TripState>("idle");
-  const [name] = useState("");
+  const [state, setState] = useState<TripState>("pickup_select");
   const [pickupAddress, setPickupAddress] = useState("");
   const [pickupCoords, setPickupCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [dest, setDest] = useState<Place | null>(null);
@@ -45,7 +45,11 @@ export function useTripFlow() {
     setDestSuggestions([]);
   }, []);
 
-  const handleConfirm = useCallback(async () => {
+  const handleConfirmPickup = useCallback(() => {
+    setState("input");
+  }, []);
+
+  const handleConfirmDest = useCallback(async () => {
     if (!pickupCoords || !dest) return;
     setLoading(true);
     const routeData = await calculateRoute(pickupCoords, { lat: dest.lat, lng: dest.lng });
@@ -62,7 +66,7 @@ export function useTripFlow() {
     setState("searching");
     try {
       const tripResult = await requestTrip({
-        phone: "0000000000", passenger_name: name || "Usuario",
+        phone: "0000000000", passenger_name: "Usuario",
         origin_address: pickupAddress, origin_lat: pickupCoords.lat, origin_lng: pickupCoords.lng,
         dest_address: dest.address || dest.name, dest_lat: dest.lat, dest_lng: dest.lng,
       });
@@ -74,7 +78,7 @@ export function useTripFlow() {
         setLoading(false);
       }, 3000);
     } catch (e) { setLoading(false); }
-  }, [pickupCoords, pickupAddress, dest, fare, name]);
+  }, [pickupCoords, pickupAddress, dest, fare]);
 
   const startTracking = useCallback(() => {
     if (!tripId || !driver) return;
@@ -88,18 +92,20 @@ export function useTripFlow() {
   }, [tripId, driver]);
 
   const reset = useCallback(() => {
-    setState("idle"); setDest(null); setDestQuery(""); setRoute(null); setFare(null);
+    setState("pickup_select");
+    setDest(null); setDestQuery(""); setRoute(null); setFare(null);
     setDriver(null); setTripId(""); setTracking(null); setEta(0);
   }, []);
 
-  const formProps = { name, setName: () => {}, destQuery, setDestQuery: (q: string) => { setDestQuery(q); doSearchDest(q); }, destSuggestions, dest, onSearch: doSearchDest, onSelect: selectDest, onConfirm: handleConfirm, loading, pickupAddress };
-  const confirmProps = { pickup: { name: pickupAddress, address: pickupAddress, lat: pickupCoords?.lat || 0, lng: pickupCoords?.lng || 0 }, dest: dest!, route, fare, onConfirm: handleRequestTrip, onBack: () => setState("idle"), loading };
+  const pickupStepProps = { onConfirm: handleConfirmPickup, address: pickupAddress, loading };
+  const destStepProps = { destQuery, setDestQuery: setDestQuery, destSuggestions, dest, onSearch: doSearchDest, onSelect: selectDest, onConfirm: handleConfirmDest, loading, pickupAddress };
+  const confirmProps = { pickup: { name: pickupAddress, address: pickupAddress, lat: pickupCoords?.lat || 0, lng: pickupCoords?.lng || 0 }, dest: dest!, route, fare, onConfirm: handleRequestTrip, onBack: () => setState("input"), loading };
   const trackingProps = { state, driver, eta, route, tracking, onStart: startTracking, paymentMethod, pickup: null, dest };
   const completedProps = { fare, driver, pickup: null, dest, onNewTrip: reset, paymentMethod };
 
   return {
     state, pickupAddress, pickupCoords, dest, route, fare, driver, eta, tracking, loading, tripId,
-    sheetRef, contentRef, formProps, confirmProps, trackingProps, completedProps,
+    sheetRef, contentRef, pickupStepProps, destStepProps, confirmProps, trackingProps, completedProps,
     handleCenterChange, setState,
   };
 }

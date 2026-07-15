@@ -1,4 +1,4 @@
-export type TripState = "idle" | "confirm" | "searching" | "driver_found" | "in_progress" | "completed";
+export type TripState = "pickup_select" | "input" | "confirm" | "searching" | "driver_found" | "in_progress" | "completed";
 
 export interface Coordinates {
   lat: number;
