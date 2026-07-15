@@ -1,0 +1,26 @@
+[Definition]
+enabled = true
+filter = sshd
+action = iptables-multiport[name=SSH, port=ssh]
+logpath = /var/log/auth.log
+maxretry = 5
+findtime = 300
+bantime = 3600
+
+[cytaxi-api]
+enabled = true
+filter = cytaxi-api
+action = iptables-multiport[name=API, port=http,https]
+logpath = /var/log/nginx/access.log
+maxretry = 20
+findtime = 60
+bantime = 600
+
+[cytaxi-auth]
+enabled = true
+filter = cytaxi-auth
+action = iptables-multiport[name=AUTH, port=http,https]
+logpath = /var/log/nginx/access.log
+maxretry = 10
+findtime = 300
+bantime = 1800
