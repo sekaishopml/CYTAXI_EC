@@ -1,22 +1,22 @@
-import { Providers } from "@/app/providers";
-import "@/styles/globals.css";
-import { Layout } from "@/components/layout/layout";
+import type { Metadata } from "next";
+import "./globals.css";
+import Script from "next/script";
+
+export const metadata: Metadata = {
+  title: "CYTAXI",
+  description: "Conversation-First Mobility Platform",
+};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
-        <title>CYTAXI - Conversational Mobility</title>
-        <meta name="description" content="Conversation-First Mobility Platform" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-        <meta name="theme-color" content="#000000" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        <Script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" strategy="beforeInteractive" />
       </head>
-      <body>
-        <Providers>
-          <Layout>{children}</Layout>
-        </Providers>
-      </body>
+      <body className="antialiased">{children}</body>
     </html>
   );
 }

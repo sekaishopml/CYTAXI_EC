@@ -1,13 +1,10 @@
-/** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   output: "standalone",
-  images: { domains: [] },
   async rewrites() {
     return [
-      { source: "/api/:path*", destination: "http://localhost:8000/api/:path*" },
+      { source: "/api/:path*", destination: "http://64.176.219.221/api/:path*" },
     ];
   },
 };
-
 module.exports = nextConfig;
