@@ -1,0 +1,104 @@
+version: "3.9"
+
+services:
+  nginx:
+    image: nginx:alpine
+    ports: ["80:80"]
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - gateway
+    restart: unless-stopped
+    networks: [cytaxi_net]
+
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.engine
+      args: { ENGINE: "gateway" }
+    environment:
+      GATEWAY_PORT: "8000"
+      APP_ENV: "beta"
+      LOG_LEVEL: "debug"
+      GATEWAY_RATE_LIMIT_RPS: "100"
+    networks: [cytaxi_net]
+    restart: unless-stopped
+    ports: ["8000:8000"]
+
+  trip:
+    build:
+      context: .
+      dockerfile: Dockerfile.engine
+      args: { ENGINE: "trip" }
+    environment: { TRIP_PORT: "8087", APP_ENV: "beta", LOG_LEVEL: "debug" }
+    networks: [cytaxi_net]
+    restart: unless-stopped
+
+  pricing:
+    build:
+      context: .
+      dockerfile: Dockerfile.engine
+      args: { ENGINE: "pricing" }
+    environment: { PRICING_PORT: "8088", APP_ENV: "beta" }
+    networks: [cytaxi_net]
+    restart: unless-stopped
+
+  payment:
+    build:
+      context: .
+      dockerfile: Dockerfile.engine
+      args: { ENGINE: "payment" }
+    environment: { PAYMENT_PORT: "8091", APP_ENV: "beta" }
+    networks: [cytaxi_net]
+    restart: unless-stopped
+
+  matching:
+    build:
+      context: .
+      dockerfile: Dockerfile.engine
+      args: { ENGINE: "matching" }
+    environment: { MATCHING_PORT: "8089", APP_ENV: "beta" }
+    networks: [cytaxi_net]
+    restart: unless-stopped
+
+  customer:
+    build:
+      context: .
+      dockerfile: Dockerfile.engine
+      args: { ENGINE: "customer" }
+    environment: { CUSTOMER_PORT: "8085", APP_ENV: "beta" }
+    networks: [cytaxi_net]
+    restart: unless-stopped
+
+  driver:
+    build:
+      context: .
+      dockerfile: Dockerfile.engine
+      args: { ENGINE: "driver" }
+    environment: { DRIVER_PORT: "8086", APP_ENV: "beta" }
+    networks: [cytaxi_net]
+    restart: unless-stopped
+
+  notification:
+    build:
+      context: .
+      dockerfile: Dockerfile.engine
+      args: { ENGINE: "notification" }
+    environment: { NOTIFICATION_PORT: "8090", APP_ENV: "beta" }
+    networks: [cytaxi_net]
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    environment: { POSTGRES_USER: "cytaxi", POSTGRES_PASSWORD: "cytaxi_beta_2026", POSTGRES_DB: "cytaxi" }
+    networks: [cytaxi_net]
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    networks: [cytaxi_net]
+    restart: unless-stopped
+
+networks:
+  cytaxi_net:
+    driver: bridge
