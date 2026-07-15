@@ -16,6 +16,7 @@ use (
 	./backend/engines/pricing
 	./backend/engines/trip
 	./backend/engines/trust
+	./backend/gateway
 	./backend/gateways/whatsapp
 	./backend/integration
 )
