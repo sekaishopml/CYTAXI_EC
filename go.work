@@ -9,6 +9,7 @@ use (
 	./backend/engines/matching
 	./backend/engines/mobility
 	./backend/engines/notification
+	./backend/engines/payment
 	./backend/engines/policy
 	./backend/engines/pricing
 	./backend/engines/trip
