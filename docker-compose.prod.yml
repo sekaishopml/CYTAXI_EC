@@ -1,0 +1,116 @@
+version: "3.9"
+
+services:
+  gateway:
+    build: ./backend/gateway
+    ports: ["8000:8000"]
+    environment:
+      - GATEWAY_PORT=8000
+      - APP_ENV=production
+      - LOG_LEVEL=warn
+      - GATEWAY_RATE_LIMIT_RPS=500
+      - JWT_SECRET=${JWT_SECRET}
+      - BACKEND_TRIP=http://trip:8087
+      - BACKEND_PRICING=http://pricing:8088
+      - BACKEND_PAYMENT=http://payment:8091
+      - BACKEND_CUSTOMER=http://customer:8085
+      - BACKEND_DRIVER=http://driver:8086
+      - BACKEND_NOTIFICATION=http://notification:8090
+      - BACKEND_ADMIN=http://admin:8094
+      - BACKEND_ANALYTICS=http://analytics:8093
+      - BACKEND_MATCHING=http://matching:8089
+    depends_on: [trip, pricing, payment, customer, driver, notification, admin, analytics, matching]
+    healthcheck: { test: ["CMD", "wget", "-qO-", "http://localhost:8000/health"], interval: "10s", timeout: "5s", retries: 3 }
+    restart: unless-stopped
+
+  trip:
+    build: ./backend/engines/trip
+    ports: ["8087:8087"]
+    environment: { TRIP_PORT: "8087", APP_ENV: "production", LOG_LEVEL: "warn", DATABASE_HOST: "postgres", DATABASE_PORT: "5432" }
+    depends_on: [postgres, redis]
+    healthcheck: { test: ["CMD", "wget", "-qO-", "http://localhost:8087/health"], interval: "10s", retries: 3 }
+    restart: unless-stopped
+
+  pricing:
+    build: ./backend/engines/pricing
+    ports: ["8088:8088"]
+    environment: { PRICING_PORT: "8088", APP_ENV: "production", LOG_LEVEL: "warn" }
+    depends_on: [postgres]
+    healthcheck: { test: ["CMD", "wget", "-qO-", "http://localhost:8088/health"], interval: "10s", retries: 3 }
+    restart: unless-stopped
+
+  payment:
+    build: ./backend/engines/payment
+    ports: ["8091:8091"]
+    environment: { PAYMENT_PORT: "8091", APP_ENV: "production", LOG_LEVEL: "warn" }
+    depends_on: [postgres]
+    healthcheck: { test: ["CMD", "wget", "-qO-", "http://localhost:8091/health"], interval: "10s", retries: 3 }
+    restart: unless-stopped
+
+  customer:
+    build: ./backend/engines/customer
+    ports: ["8085:8085"]
+    environment: { CUSTOMER_PORT: "8085", APP_ENV: "production", LOG_LEVEL: "warn" }
+    depends_on: [postgres]
+    restart: unless-stopped
+
+  driver:
+    build: ./backend/engines/driver
+    ports: ["8086:8086"]
+    environment: { DRIVER_PORT: "8086", APP_ENV: "production", LOG_LEVEL: "warn" }
+    depends_on: [postgres]
+    restart: unless-stopped
+
+  notification:
+    build: ./backend/engines/notification
+    ports: ["8090:8090"]
+    environment: { NOTIFICATION_PORT: "8090", APP_ENV: "production", LOG_LEVEL: "warn" }
+    depends_on: [postgres]
+    restart: unless-stopped
+
+  admin:
+    build: ./backend/engines/admin
+    ports: ["8094:8094"]
+    environment: { ADMIN_PORT: "8094", APP_ENV: "production", LOG_LEVEL: "warn" }
+    depends_on: [postgres]
+    restart: unless-stopped
+
+  analytics:
+    build: ./backend/engines/analytics
+    ports: ["8093:8093"]
+    environment: { ANALYTICS_PORT: "8093", APP_ENV: "production", LOG_LEVEL: "warn" }
+    depends_on: [postgres]
+    restart: unless-stopped
+
+  matching:
+    build: ./backend/engines/matching
+    ports: ["8089:8089"]
+    environment: { MATCHING_PORT: "8089", APP_ENV: "production", LOG_LEVEL: "warn" }
+    depends_on: [postgres, redis]
+    restart: unless-stopped
+
+  trust:
+    build: ./backend/engines/trust
+    ports: ["8092:8092"]
+    environment: { TRUST_PORT: "8092", APP_ENV: "production", LOG_LEVEL: "warn" }
+    depends_on: [postgres]
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    environment: { POSTGRES_USER: "cytaxi", POSTGRES_PASSWORD: "${DB_PASSWORD}", POSTGRES_DB: "cytaxi" }
+    ports: ["5432:5432"]
+    volumes: [postgres_data:/var/lib/postgresql/data]
+    healthcheck: { test: ["CMD-SHELL", "pg_isready -U cytaxi"], interval: "5s", retries: 5 }
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+    volumes: [redis_data:/data]
+    healthcheck: { test: ["CMD", "redis-cli", "ping"], interval: "5s", retries: 5 }
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
