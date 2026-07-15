@@ -6,6 +6,7 @@ use (
 	./backend/engines/customer
 	./backend/engines/driver
 	./backend/engines/geospatial
+	./backend/engines/matching
 	./backend/engines/mobility
 	./backend/engines/policy
 	./backend/engines/pricing
