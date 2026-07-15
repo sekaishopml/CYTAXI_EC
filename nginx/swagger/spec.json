@@ -1,0 +1,44 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "CYTAXI API",
+    "version": "1.0.0-rc1",
+    "description": "Conversation-First Mobility Platform - Beta v1.0.0-rc1\n\nPublic IP: http://64.176.219.221",
+    "contact": { "name": "CYTAXI Team", "url": "http://64.176.219.221" }
+  },
+  "servers": [{ "url": "http://64.176.219.221/api/v1", "description": "Beta Server (Public IP)" }],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": { "type": "http", "scheme": "bearer", "bearerFormat": "JWT" }
+    }
+  },
+  "paths": {
+    "/health": { "get": { "summary": "Health check", "operationId": "health", "responses": { "200": { "description": "OK" } } } },
+    "/trip/request": { "post": { "summary": "Request a trip", "tags": ["Trip"], "responses": { "200": { "description": "Trip created" } } } },
+    "/trip/trips/{id}": { "get": { "summary": "Get trip", "tags": ["Trip"], "parameters": [{ "name": "id", "in": "path", "required": true }], "responses": { "200": { "description": "Trip details" } } } },
+    "/trip/start": { "post": { "summary": "Start trip", "tags": ["Trip"], "responses": { "200": { "description": "Trip started" } } } },
+    "/trip/location": { "post": { "summary": "Update location", "tags": ["Trip"], "responses": { "200": { "description": "Location updated" } } } },
+    "/trip/finish": { "post": { "summary": "Finish trip", "tags": ["Trip"], "responses": { "200": { "description": "Trip completed" } } } },
+    "/trip/ws": { "get": { "summary": "Live tracking SSE", "tags": ["Trip"], "parameters": [{ "name": "trip_id", "in": "query", "required": true }], "responses": { "200": { "description": "SSE stream" } } } },
+    "/pricing/estimate": { "post": { "summary": "Estimate fare", "tags": ["Pricing"], "responses": { "200": { "description": "Fare estimate" } } } },
+    "/matching/start": { "post": { "summary": "Start matching", "tags": ["Matching"], "responses": { "200": { "description": "Matching started" } } } },
+    "/matching/{id}/candidates": { "get": { "summary": "Get candidates", "tags": ["Matching"], "parameters": [{ "name": "id", "in": "path", "required": true }], "responses": { "200": { "description": "Candidates list" } } } },
+    "/driver/requests": { "get": { "summary": "Get driver requests", "tags": ["Driver"], "responses": { "200": { "description": "Request list" } } } },
+    "/driver/accept": { "post": { "summary": "Accept trip", "tags": ["Driver"], "responses": { "200": { "description": "Trip accepted" } } } },
+    "/driver/reject": { "post": { "summary": "Reject trip", "tags": ["Driver"], "responses": { "200": { "description": "Trip rejected" } } } },
+    "/payments": { "post": { "summary": "Create payment", "tags": ["Payment"], "responses": { "200": { "description": "Payment created" } } } },
+    "/payments/confirm": { "post": { "summary": "Confirm payment", "tags": ["Payment"], "responses": { "200": { "description": "Payment confirmed" } } } },
+    "/payments/history": { "get": { "summary": "Payment history", "tags": ["Payment"], "responses": { "200": { "description": "History list" } } } },
+    "/receipts/{id}": { "get": { "summary": "Get receipt", "tags": ["Payment"], "parameters": [{ "name": "id", "in": "path", "required": true }], "responses": { "200": { "description": "Receipt" } } } },
+    "/customers/{id}/profile": { "get": { "summary": "Customer profile", "tags": ["Customer"], "parameters": [{ "name": "id", "in": "path", "required": true }], "responses": { "200": { "description": "Profile" } } } },
+    "/drivers/{id}": { "get": { "summary": "Driver profile", "tags": ["Driver"], "parameters": [{ "name": "id", "in": "path", "required": true }], "responses": { "200": { "description": "Driver" } } } }
+  },
+  "tags": [
+    { "name": "Trip", "description": "Trip lifecycle" },
+    { "name": "Pricing", "description": "Fare calculation" },
+    { "name": "Payment", "description": "Payment processing" },
+    { "name": "Matching", "description": "Driver matching" },
+    { "name": "Driver", "description": "Driver operations" },
+    { "name": "Customer", "description": "Customer operations" }
+  ]
+}
