@@ -15,16 +15,15 @@ export default function HomePage() {
   const prevState = useRef(flow.state);
 
   useEffect(() => {
-    const sheet = flow.sheetRef.current;
     const content = flow.contentRef.current;
-    if (!sheet || prevState.current === flow.state) return;
+    if (!content || prevState.current === flow.state) return;
 
     if (flow.state === "searching" || flow.state === "driver_found" || flow.state === "in_progress") {
       gsap.fromTo(content, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: "back.out(1.2)" });
     } else if (flow.state === "completed") {
       gsap.fromTo(content, { opacity: 0, scale: 0.95 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.2)" });
-    } else {
-      if (content) gsap.fromTo(content, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3 });
+    } else if (content) {
+      gsap.fromTo(content, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3 });
     }
     prevState.current = flow.state;
   }, [flow.state]);
@@ -33,57 +32,33 @@ export default function HomePage() {
     gsap.fromTo(flow.sheetRef.current, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out", delay: 0.2 });
   }, []);
 
-  const renderSheet = () => {
-    switch (flow.state) {
-      case "idle": return <FormState {...flow.formProps} />;
-      case "confirm": return <ConfirmState {...flow.confirmProps} />;
-      case "searching": case "driver_found": case "in_progress":
-        return <TrackingState {...flow.trackingProps} />;
-      case "completed": return <CompletedState {...flow.completedProps} />;
-      default: return null;
-    }
-  };
-
   const showMap = flow.state !== "completed";
 
   return (
     <div style={{ width: "100vw", height: "100dvh", overflow: "hidden", display: "flex", flexDirection: "column", position: "relative" }}>
-      {/* Top: Map (faded background, 50dvh) */}
+      {/* Top: Map 50dvh */}
       {showMap && (
         <div style={{ width: "100%", height: "50dvh", position: "relative", flexShrink: 0 }}>
-          <div style={{ position: "absolute", inset: 0, opacity: 0.6 }}>
-            <MapView
-              pickupCoords={flow.pickup ? { lat: flow.pickup.lat, lng: flow.pickup.lng } : null}
-              destCoords={flow.dest ? { lat: flow.dest.lat, lng: flow.dest.lng } : null}
-              driverCoords={flow.driver?.lat && flow.driver?.lng ? { lat: flow.driver.lat, lng: flow.driver.lng } : null}
-              polyline={flow.route?.polyline || null}
-              fitBounds={flow.state === "confirm"}
-            />
-          </div>
-          {/* Gradient overlay at bottom of map */}
-          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 40, background: "linear-gradient(transparent, rgba(248,249,251,0.9))" }} />
+          <MapView onCenterChange={flow.handleCenterChange} />
+          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 32, background: "linear-gradient(transparent, rgba(248,249,251,0.95))" }} />
         </div>
       )}
 
-      {(flow.state === "driver_found" || flow.state === "in_progress") && flow.eta > 0 && (
-        <div style={{ position: "fixed", top: 16, left: 16, zIndex: 8, background: "rgba(0,0,0,0.88)", color: "#fff", padding: "10px 16px", borderRadius: 14, fontSize: 15, fontWeight: 700, fontFamily: "Inter", backdropFilter: "blur(12px)" }}>
-          {Math.ceil(flow.eta / 60)} min away
-        </div>
-      )}
-
-      {/* Bottom panel — sin scroll */}
+      {/* Bottom panel */}
       <div ref={flow.sheetRef} style={{
-        width: "100%", flex: 1,
-        overflow: "hidden",
+        width: "100%", flex: 1, overflow: "hidden",
         background: "var(--uk-background)",
         display: "flex", flexDirection: "column",
       }}>
         <div ref={flow.contentRef} style={{ flex: 1, overflow: "hidden" }}>
-          {renderSheet()}
+          {flow.state === "idle" && <FormState {...flow.formProps} />}
+          {flow.state === "confirm" && <ConfirmState {...flow.confirmProps} />}
+          {["searching", "driver_found", "in_progress"].includes(flow.state) && <TrackingState {...flow.trackingProps} />}
+          {flow.state === "completed" && <CompletedState {...flow.completedProps} />}
         </div>
       </div>
 
-      {/* Bottom nav bar */}
+      {/* Bottom nav */}
       <nav style={{
         position: "fixed", bottom: 0, width: "100%", zIndex: 50,
         background: "rgba(255,255,255,0.9)", backdropFilter: "blur(16px)",
@@ -92,11 +67,11 @@ export default function HomePage() {
         padding: "8px 0 12px",
       }}>
         {[
-          { icon: "home", label: "Home", active: flow.state === "idle" || flow.state === "confirm" },
-          { icon: "analytics", label: "Activity", active: false },
-          { icon: "directions_car", label: "Trips", active: ["searching", "driver_found", "in_progress", "completed"].includes(flow.state) },
-          { icon: "account_balance_wallet", label: "Wallet", active: false },
-          { icon: "person", label: "Profile", active: false },
+          { icon: "home", label: "Inicio", active: flow.state === "idle" || flow.state === "confirm" },
+          { icon: "analytics", label: "Actividad", active: false },
+          { icon: "directions_car", label: "Viajes", active: ["searching", "driver_found", "in_progress", "completed"].includes(flow.state) },
+          { icon: "account_balance_wallet", label: "Billetera", active: false },
+          { icon: "person", label: "Perfil", active: false },
         ].map(tab => (
           <a key={tab.label} href="#" onClick={(e) => e.preventDefault()}
             style={{
@@ -107,7 +82,7 @@ export default function HomePage() {
             }}
           >
             <span className="material-symbols-outlined" style={{ fontSize: 22 }}>{tab.icon}</span>
-            {tab.label}
+            <span style={{ marginTop: 2 }}>{tab.label}</span>
           </a>
         ))}
       </nav>

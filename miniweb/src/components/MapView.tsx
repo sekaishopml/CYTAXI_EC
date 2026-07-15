@@ -1,121 +1,133 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
-import { Coordinates } from "@/types";
+import { useEffect, useRef, useState, useCallback } from "react";
 
 declare global { interface Window { L: any; } }
 
+const API_URL = typeof window !== "undefined"
+  ? `${window.location.protocol}//${window.location.host}/api/v1`
+  : "http://64.176.219.221/api/v1";
+
 interface MapViewProps {
-  pickupCoords: Coordinates | null;
-  destCoords: Coordinates | null;
-  driverCoords: Coordinates | null;
-  polyline: string | null;
-  fitBounds: boolean;
-  onLocate?: (coords: Coordinates) => void;
+  onCenterChange?: (coords: { lat: number; lng: number; address: string }) => void;
+  onMapReady?: () => void;
 }
 
-export function MapView({ pickupCoords, destCoords, driverCoords, polyline, fitBounds, onLocate }: MapViewProps) {
+export function MapView({ onCenterChange, onMapReady }: MapViewProps) {
   const mapRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const pickupMarkerRef = useRef<any>(null);
-  const destMarkerRef = useRef<any>(null);
-  const driverMarkerRef = useRef<any>(null);
-  const routeRef = useRef<any>(null);
   const initialized = useRef(false);
   const [mapReady, setMapReady] = useState(false);
+  const [centerAddr, setCenterAddr] = useState("Detectando ubicación...");
 
+  // Reverse geocode center point
+  const reverseGeocode = useCallback(async (lat: number, lng: number) => {
+    try {
+      const res = await fetch(`${API_URL}/geo/reverse?lat=${lat}&lng=${lng}`);
+      if (res.ok) {
+        const data = await res.json();
+        const addr = data?.FormattedAddress || data?.formatted_address || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+        setCenterAddr(addr);
+        onCenterChange?.({ lat, lng, address: addr });
+      }
+    } catch {
+      setCenterAddr(`${lat.toFixed(4)}, ${lng.toFixed(4)}`);
+      onCenterChange?.({ lat, lng, address: `${lat.toFixed(4)}, ${lng.toFixed(4)}` });
+    }
+  }, [onCenterChange]);
+
+  // Init map
   useEffect(() => {
     if (typeof window === "undefined" || !window.L || initialized.current) return;
     const L = window.L;
+
     const map = L.map(containerRef.current!, {
       center: [-2.1894, -79.8893],
-      zoom: 14,
+      zoom: 15,
       zoomControl: false,
       attributionControl: false,
     });
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19 }).addTo(map);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 20 }).addTo(map);
+
+    // On move end — get center address
+    map.on("moveend", () => {
+      const c = map.getCenter();
+      reverseGeocode(c.lat, c.lng);
+    });
+
     mapRef.current = map;
     initialized.current = true;
     setMapReady(true);
+    onMapReady?.();
 
-    // Locate user
-    map.locate({ setView: false, maxZoom: 16 });
+    // GPS locate
+    map.locate({ setView: true, maxZoom: 16 });
     map.on("locationfound", (e: any) => {
-      if (onLocate && !pickupCoords) {
-        onLocate({ lat: e.latlng.lat, lng: e.latlng.lng });
-      }
+      map.setView([e.latlng.lat, e.latlng.lng], 16);
+      reverseGeocode(e.latlng.lat, e.latlng.lng);
+    });
+    map.on("locationerror", () => {
+      // Default Guayaquil
+      reverseGeocode(-2.1894, -79.8893);
     });
 
     return () => { map.remove(); initialized.current = false; };
   }, []);
 
-  // Pickup marker
-  useEffect(() => {
-    if (!mapRef.current || !pickupCoords) return;
-    const L = window.L;
-    if (pickupMarkerRef.current) mapRef.current.removeLayer(pickupMarkerRef.current);
-    const icon = L.divIcon({ html: '<div style="width:24px;height:24px;background:#000;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,.3)"></div>', className: "", iconSize: [24, 24], iconAnchor: [12, 12] });
-    pickupMarkerRef.current = L.marker([pickupCoords.lat, pickupCoords.lng], { icon }).addTo(mapRef.current);
-  }, [pickupCoords]);
-
-  // Dest marker
-  useEffect(() => {
-    if (!mapRef.current || !destCoords) return;
-    const L = window.L;
-    if (destMarkerRef.current) mapRef.current.removeLayer(destMarkerRef.current);
-    const icon = L.divIcon({ html: '<div style="width:24px;height:24px;background:#276ef1;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,.3)"></div>', className: "", iconSize: [24, 24], iconAnchor: [12, 12] });
-    destMarkerRef.current = L.marker([destCoords.lat, destCoords.lng], { icon }).addTo(mapRef.current);
-  }, [destCoords]);
-
-  // Driver marker
-  useEffect(() => {
-    if (!mapRef.current || !driverCoords) return;
-    const L = window.L;
-    if (driverMarkerRef.current) mapRef.current.removeLayer(driverMarkerRef.current);
-    const icon = L.divIcon({ html: '<div style="width:36px;height:36px;background:#000;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 12px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px">🚗</div>', className: "", iconSize: [36, 36], iconAnchor: [18, 18] });
-    driverMarkerRef.current = L.marker([driverCoords.lat, driverCoords.lng], { icon, zIndexOffset: 100 }).addTo(mapRef.current);
-  }, [driverCoords]);
-
-  // Polyline
-  useEffect(() => {
-    if (!mapRef.current || !polyline) return;
-    const L = window.L;
-    if (routeRef.current) mapRef.current.removeLayer(routeRef.current);
-    try {
-      const coords = decodePolyline(polyline);
-      if (coords.length > 0) {
-        routeRef.current = L.polyline(coords, { color: "#276ef1", weight: 5, opacity: 0.9, lineCap: "round" }).addTo(mapRef.current);
-        mapRef.current.fitBounds(routeRef.current.getBounds().pad(0.2));
-      }
-    } catch (e) {
-      if (pickupCoords && destCoords) {
-        routeRef.current = L.polyline([[pickupCoords.lat, pickupCoords.lng], [destCoords.lat, destCoords.lng]], { color: "#276ef1", weight: 4, opacity: 0.5, dashArray: "10, 10" }).addTo(mapRef.current);
-      }
-    }
-  }, [polyline, pickupCoords, destCoords]);
-
   return (
     <>
       <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
       {mapReady && (
-        <button className="locate-btn" onClick={() => { mapRef.current?.locate({ setView: true, maxZoom: 16 }); }}
-          style={{ position: "fixed", right: "16px", bottom: "calc(50dvh + 20px)", zIndex: 9, width: 44, height: 44, borderRadius: 14, background: "var(--uk-surface-container-lowest)", border: "none", boxShadow: "0 2px 8px rgba(0,0,0,0.08)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}
-          aria-label="My location">📍</button>
+        <>
+          {/* Central pin */}
+          <div style={{
+            position: "absolute", top: "50%", left: "50%", zIndex: 10,
+            transform: "translate(-50%, -100%)", pointerEvents: "none",
+            display: "flex", flexDirection: "column", alignItems: "center",
+          }}>
+            {/* Pulse ring */}
+            <div style={{
+              width: 60, height: 60, borderRadius: "50%",
+              background: "rgba(0,108,73,0.15)",
+              position: "absolute", top: 0, left: "50%",
+              transform: "translate(-50%, -50%)",
+              animation: "pulse 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite",
+            }} />
+            {/* Pin SVG */}
+            <svg width="32" height="42" viewBox="0 0 32 42" fill="none" style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.3))" }}>
+              <path d="M16 0C7.16 0 0 7.16 0 16c0 12 16 26 16 26s16-14 16-26C32 7.16 24.84 0 16 0z" fill="#006c49" />
+              <circle cx="16" cy="15" r="8" fill="white" />
+            </svg>
+          </div>
+
+          {/* Address bubble — floating above the pin */}
+          <div style={{
+            position: "absolute", top: "calc(50% - 56px)", left: "50%",
+            transform: "translateX(-50%)", zIndex: 11,
+            background: "rgba(255,255,255,0.95)", backdropFilter: "blur(12px)",
+            padding: "6px 16px", borderRadius: 12,
+            boxShadow: "0 2px 12px rgba(0,0,0,0.12)",
+            fontSize: 13, fontWeight: 500, fontFamily: "Inter",
+            color: "#191c1e", whiteSpace: "nowrap", maxWidth: 260,
+            overflow: "hidden", textOverflow: "ellipsis",
+            border: "1px solid rgba(0,0,0,0.06)",
+            pointerEvents: "none",
+          }}>
+            📍 {centerAddr}
+          </div>
+
+          {/* My location button */}
+          <button style={{
+            position: "fixed", right: 16, bottom: "calc(50dvh - 50px)", zIndex: 9,
+            width: 44, height: 44, borderRadius: 14,
+            background: "var(--uk-surface-container-lowest)",
+            border: "none", boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+            cursor: "pointer", display: "flex", alignItems: "center",
+            justifyContent: "center", fontSize: 20,
+          }} onClick={() => { mapRef.current?.locate({ setView: true, maxZoom: 16 }); }}
+            aria-label="Mi ubicación">📍</button>
+        </>
       )}
     </>
   );
-}
-
-function decodePolyline(str: string, precision = 5): [number, number][] {
-  let index = 0, lat = 0, lng = 0;
-  const coords: [number, number][] = [];
-  while (index < str.length) {
-    let shift = 0, result = 0, byte: number;
-    do { byte = str.charCodeAt(index++) - 63; result |= (byte & 0x1f) << shift; shift += 5; } while (byte >= 0x20);
-    lat += (result & 1) ? ~(result >> 1) : (result >> 1);
-    shift = 0; result = 0;
-    do { byte = str.charCodeAt(index++) - 63; result |= (byte & 0x1f) << shift; shift += 5; } while (byte >= 0x20);
-    lng += (result & 1) ? ~(result >> 1) : (result >> 1);
-    coords.push([lat / Math.pow(10, precision), lng / Math.pow(10, precision)]);
-  }
-  return coords;
 }
