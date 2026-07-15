@@ -16,22 +16,13 @@ export default function HomePage() {
 
   useEffect(() => {
     const sheet = flow.sheetRef.current;
+    const content = flow.contentRef.current;
     if (!sheet || prevState.current === flow.state) return;
 
-    const content = flow.contentRef.current;
-
-    if (prevState.current === "idle" && flow.state === "confirm") {
-      if (content) gsap.fromTo(content, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" });
-    } else if (flow.state === "searching" || flow.state === "driver_found") {
-      gsap.to(sheet, { y: "100%", duration: 0.3, ease: "power2.in", onComplete: () => {
-        gsap.fromTo(sheet, { y: "100%" }, { y: "0%", duration: 0.5, ease: "back.out(1.2)" });
-        if (content) gsap.fromTo(content, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.4 });
-      }});
+    if (flow.state === "searching" || flow.state === "driver_found" || flow.state === "in_progress") {
+      gsap.fromTo(content, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: "back.out(1.2)" });
     } else if (flow.state === "completed") {
-      gsap.to(sheet, { y: "100%", duration: 0.3, ease: "power2.in", onComplete: () => {
-        gsap.fromTo(sheet, { y: "100%" }, { y: "0%", duration: 0.6, ease: "elastic.out(1, 0.7)" });
-        if (content) gsap.fromTo(content, { opacity: 0, scale: 0.95 }, { opacity: 1, scale: 1, duration: 0.4 });
-      }});
+      gsap.fromTo(content, { opacity: 0, scale: 0.95 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.2)" });
     } else {
       if (content) gsap.fromTo(content, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3 });
     }
@@ -39,8 +30,7 @@ export default function HomePage() {
   }, [flow.state]);
 
   useEffect(() => {
-    const sheet = flow.sheetRef.current;
-    if (sheet) gsap.to(sheet, { y: "0%", duration: 0.6, ease: "power3.out", delay: 0.3 });
+    gsap.fromTo(flow.sheetRef.current, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out", delay: 0.2 });
   }, []);
 
   const renderSheet = () => {
@@ -54,29 +44,72 @@ export default function HomePage() {
     }
   };
 
-  return (
-    <div style={{ position: "relative", width: "100vw", height: "100dvh", overflow: "hidden", display: "flex", flexDirection: "column" }}>
-      {/* Top section: map */}
-      <div style={{ position: "relative", width: "100%", height: "50dvh", flexShrink: 0 }}>
-        <MapView
-          pickupCoords={flow.pickup ? { lat: flow.pickup.lat, lng: flow.pickup.lng } : null}
-          destCoords={flow.dest ? { lat: flow.dest.lat, lng: flow.dest.lng } : null}
-          driverCoords={flow.driver?.lat && flow.driver?.lng ? { lat: flow.driver.lat, lng: flow.driver.lng } : null}
-          polyline={flow.route?.polyline || null}
-          fitBounds={flow.state === "confirm"}
-        />
-      </div>
+  const showMap = flow.state !== "completed";
 
-      {(flow.state === "driver_found" || flow.state === "in_progress") && flow.eta > 0 && (
-        <div className="eta-box">{Math.ceil(flow.eta / 60)} min away</div>
+  return (
+    <div style={{ width: "100vw", height: "100dvh", overflow: "hidden", display: "flex", flexDirection: "column", position: "relative" }}>
+      {/* Top: Map (faded background, 50dvh) */}
+      {showMap && (
+        <div style={{ width: "100%", height: "50dvh", position: "relative", flexShrink: 0 }}>
+          <div style={{ position: "absolute", inset: 0, opacity: 0.6 }}>
+            <MapView
+              pickupCoords={flow.pickup ? { lat: flow.pickup.lat, lng: flow.pickup.lng } : null}
+              destCoords={flow.dest ? { lat: flow.dest.lat, lng: flow.dest.lng } : null}
+              driverCoords={flow.driver?.lat && flow.driver?.lng ? { lat: flow.driver.lat, lng: flow.driver.lng } : null}
+              polyline={flow.route?.polyline || null}
+              fitBounds={flow.state === "confirm"}
+            />
+          </div>
+          {/* Gradient overlay at bottom of map */}
+          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 40, background: "linear-gradient(transparent, rgba(248,249,251,0.9))" }} />
+        </div>
       )}
 
-      {/* Bottom section: sheet (hidden initially, GSAP slides up) */}
-      <div ref={flow.sheetRef} style={{ width: "100%", height: "50dvh", overflow: "hidden", background: "var(--uk-surface-container-lowest)", transform: "translateY(100%)" }}>
-        <div ref={flow.contentRef} style={{ height: "100%", overflowY: "auto" }}>
+      {(flow.state === "driver_found" || flow.state === "in_progress") && flow.eta > 0 && (
+        <div style={{ position: "fixed", top: 16, left: 16, zIndex: 8, background: "rgba(0,0,0,0.88)", color: "#fff", padding: "10px 16px", borderRadius: 14, fontSize: 15, fontWeight: 700, fontFamily: "Inter", backdropFilter: "blur(12px)" }}>
+          {Math.ceil(flow.eta / 60)} min away
+        </div>
+      )}
+
+      {/* Bottom panel */}
+      <div ref={flow.sheetRef} style={{
+        width: "100%", flex: 1,
+        overflowY: "auto", overflowX: "hidden",
+        background: "var(--uk-background)",
+      }}>
+        <div ref={flow.contentRef} style={{ minHeight: "100%" }}>
           {renderSheet()}
         </div>
       </div>
+
+      {/* Bottom nav bar */}
+      <nav style={{
+        position: "fixed", bottom: 0, width: "100%", zIndex: 50,
+        background: "rgba(255,255,255,0.9)", backdropFilter: "blur(16px)",
+        boxShadow: "0px -4px 20px rgba(0,0,0,0.05)",
+        display: "flex", justifyContent: "space-around", alignItems: "center",
+        padding: "8px 0 12px",
+      }}>
+        {[
+          { icon: "home", label: "Home", active: flow.state === "idle" || flow.state === "confirm" },
+          { icon: "analytics", label: "Activity", active: false },
+          { icon: "directions_car", label: "Trips", active: ["searching", "driver_found", "in_progress", "completed"].includes(flow.state) },
+          { icon: "account_balance_wallet", label: "Wallet", active: false },
+          { icon: "person", label: "Profile", active: false },
+        ].map(tab => (
+          <a key={tab.label} href="#" onClick={(e) => e.preventDefault()}
+            style={{
+              display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+              padding: "6px 14px", borderRadius: 12, fontSize: 10, fontWeight: 600, fontFamily: "Inter",
+              transition: "all 0.2s",
+              ...(tab.active ? { background: "#006c491A", color: "#006c49" } : { color: "#3c4a42" }),
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 22 }}>{tab.icon}</span>
+            {tab.label}
+          </a>
+        ))}
+      </nav>
     </div>
   );
 }

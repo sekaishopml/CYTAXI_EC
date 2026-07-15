@@ -2,7 +2,13 @@
 import { Dispatch, SetStateAction } from "react";
 import { Place } from "@/types";
 
-const STITCH_GREEN = "#006c49";
+const G = "#006c49";  // primary green
+const T1 = "#191c1e"; // on-surface
+const T2 = "#3c4a42"; // on-surface-variant
+const BG = "#f8f9fb"; // surface/background
+const INPUT = "#e1e2e4"; // surface-container-highest
+const CARD_BG = "#ffffff/90"; // glass card
+const OUTLINE = "#bbcabf";
 
 interface FormStateProps {
   phone: string; setPhone: Dispatch<SetStateAction<string>>;
@@ -21,107 +27,117 @@ interface FormStateProps {
 
 export function FormState({ phone, setPhone, name, setName, pickupQuery, setPickupQuery, destQuery, setDestQuery, pickupSuggestions, destSuggestions, pickup, dest, onSearch, onSelect, onConfirm, loading, paymentMethod, setPaymentMethod }: FormStateProps) {
   return (
-    <div style={{ padding: "12px 20px 24px" }}>
-      <div className="sheet-handle" />
-      <h2 className="text-headline-mobile" style={{ marginBottom: 16 }}>Where to?</h2>
+    <div style={{ padding: "8px 16px 20px", display: "flex", flexDirection: "column", gap: 16 }}>
 
-      {/* Phone */}
-      <div style={{ marginBottom: 12 }}>
-        <label className="text-label-sm text-muted" style={{ display: "block", marginBottom: 6 }}>Phone number</label>
-        <div className="input-field" style={{ display: "flex", alignItems: "center", gap: 10, padding: 0, overflow: "hidden" }}>
-          <span className="material-symbols-outlined" style={{ marginLeft: 16, fontSize: 20, color: "var(--uk-on-surface-variant)" }}>phone</span>
-          <input style={{ flex: 1, border: "none", background: "transparent", outline: "none", fontSize: 16, fontFamily: "Inter", padding: "16px 0" }} type="tel" placeholder="+593 99 999 9999" value={phone} onChange={e => setPhone(e.target.value)} />
-        </div>
+      {/* Greeting */}
+      <div>
+        <h1 style={{ fontSize: 20, fontWeight: 600, lineHeight: 1.4, color: T1 }}>
+          Good morning, <span style={{ color: G }}>{name || "Alex"}</span>
+        </h1>
       </div>
 
-      {/* Name */}
-      <div style={{ marginBottom: 12 }}>
-        <label className="text-label-sm text-muted" style={{ display: "block", marginBottom: 6 }}>Your name</label>
-        <div className="input-field" style={{ display: "flex", alignItems: "center", gap: 10, padding: 0, overflow: "hidden" }}>
-          <span className="material-symbols-outlined" style={{ marginLeft: 16, fontSize: 20, color: "var(--uk-on-surface-variant)" }}>person</span>
-          <input style={{ flex: 1, border: "none", background: "transparent", outline: "none", fontSize: 16, fontFamily: "Inter", padding: "16px 0" }} placeholder="Your name" value={name} onChange={e => setName(e.target.value)} />
-        </div>
-      </div>
+      {/* Glassmorphic Interaction Card */}
+      <div style={{
+        background: "rgba(255,255,255,0.9)",
+        backdropFilter: "blur(20px)",
+        borderRadius: 16,
+        boxShadow: "0px 4px 20px rgba(0,0,0,0.05)",
+        border: `1px solid ${OUTLINE}4D`,
+        padding: 16,
+        display: "flex",
+        flexDirection: "column",
+        gap: 12,
+        position: "relative",
+        overflow: "hidden"
+      }}>
 
-      {/* Pickup */}
-      <div style={{ marginBottom: 12 }}>
-        <label className="text-label-sm text-muted" style={{ display: "block", marginBottom: 6 }}>Pickup</label>
-        <div className="input-field" style={{ display: "flex", alignItems: "center", gap: 10, padding: 0, overflow: "hidden" }}>
-          <div className="dot dot-pickup" style={{ marginLeft: 16, background: STITCH_GREEN }} />
-          <input style={{ flex: 1, border: "none", background: "transparent", outline: "none", fontSize: 16, fontFamily: "Inter", padding: "16px 0" }} placeholder="Where are you?" value={pickupQuery} onChange={e => { setPickupQuery(e.target.value); onSearch(e.target.value, true); }} autoFocus />
+        {/* Pickup field */}
+        <div style={{ display: "flex", alignItems: "center", gap: 12, background: INPUT, borderRadius: 12, padding: 12, border: `1px solid ${OUTLINE}4D`, transition: "border-color 0.2s" }}>
+          <button style={{ background: "none", border: "none", padding: 0, display: "flex", alignItems: "center", justifyContent: "center", color: G, cursor: "pointer" }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 22, fontVariationSettings: "'FILL' 1" }}>my_location</span>
+          </button>
+          <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+            <label style={{ fontSize: 12, fontWeight: 600, letterSpacing: "0.05em", color: T2, marginBottom: 2, fontFamily: "Inter" }}>Current Location</label>
+            <input
+              style={{ background: "transparent", border: "none", padding: 0, fontSize: 16, fontWeight: 400, fontFamily: "Inter", color: T1, width: "100%", outline: "none" }}
+              placeholder="Search pickup location"
+              type="text"
+              value={pickupQuery}
+              onChange={e => { setPickupQuery(e.target.value); onSearch(e.target.value, true); }}
+              autoFocus
+            />
+          </div>
         </div>
+
+        {/* Vertical divider */}
+        <div style={{ position: "absolute", left: 33, top: 56, bottom: 56, width: 2, background: `${G}33` }} />
+
+        {/* Destination field */}
+        <div style={{ display: "flex", alignItems: "center", gap: 12, background: INPUT, borderRadius: 12, padding: 12, border: `1px solid ${G}4D`, boxShadow: "0px 1px 3px rgba(0,0,0,0.05)", transition: "border-color 0.2s" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", color: G, paddingLeft: 1 }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 22 }}>search</span>
+          </div>
+          <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+            <label style={{ fontSize: 12, fontWeight: 600, letterSpacing: "0.05em", color: G, marginBottom: 2, fontFamily: "Inter" }}>Where to?</label>
+            <input
+              style={{ background: "transparent", border: "none", padding: 0, fontSize: 16, fontWeight: 400, fontFamily: "Inter", color: T1, width: "100%", outline: "none" }}
+              placeholder="Search destination"
+              type="text"
+              value={destQuery}
+              onChange={e => { setDestQuery(e.target.value); onSearch(e.target.value, false); }}
+            />
+          </div>
+        </div>
+
+        {/* Phone number */}
+        <div style={{ display: "flex", alignItems: "center", gap: 12, background: INPUT, borderRadius: 12, padding: 12, border: `1px solid ${OUTLINE}4D` }}>
+          <span className="material-symbols-outlined" style={{ fontSize: 20, color: T2 }}>phone</span>
+          <input style={{ background: "transparent", border: "none", padding: 0, fontSize: 16, fontFamily: "Inter", color: T1, width: "100%", outline: "none" }}
+            type="tel" placeholder="Phone number" value={phone} onChange={e => setPhone(e.target.value)} />
+        </div>
+
+        {/* Suggestions dropdown */}
         {pickupSuggestions.length > 0 && !pickup && (
-          <div className="suggestions">
+          <div style={{ background: "#fff", borderRadius: 12, border: `1px solid ${OUTLINE}`, overflow: "hidden", position: "relative", zIndex: 10, marginTop: -8 }}>
             {pickupSuggestions.slice(0, 4).map((p, i) => (
-              <div key={i} className="suggestion-item" onClick={() => onSelect(p, true)}>
-                <span className="material-symbols-outlined" style={{ fontSize: 18, color: STITCH_GREEN, flexShrink: 0 }}>location_on</span>
-                <div><p className="text-body-md" style={{ fontWeight: 500 }}>{p.name}</p><p className="text-label-sm text-muted">{p.address}</p></div>
+              <div key={i} onClick={() => onSelect(p, true)} style={{ padding: "10px 14px", display: "flex", alignItems: "center", gap: 10, cursor: "pointer", borderBottom: i < 3 ? `1px solid ${OUTLINE}` : "none", background: "transparent", transition: "background 0.15s" }}
+                onMouseEnter={e => e.currentTarget.style.background = "#f8f9fb"} onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
+                <span className="material-symbols-outlined" style={{ fontSize: 18, color: G, flexShrink: 0 }}>location_on</span>
+                <div><p style={{ fontSize: 14, fontWeight: 500, color: T1, margin: 0 }}>{p.name}</p><p style={{ fontSize: 12, color: T2, margin: 0 }}>{p.address}</p></div>
               </div>
             ))}
           </div>
         )}
-      </div>
 
-      {/* Destination */}
-      <div style={{ marginBottom: 16 }}>
-        <label className="text-label-sm text-muted" style={{ display: "block", marginBottom: 6 }}>Destination</label>
-        <div className="input-field" style={{ display: "flex", alignItems: "center", gap: 10, padding: 0, overflow: "hidden" }}>
-          <span className="material-symbols-outlined" style={{ marginLeft: 16, fontSize: 20, color: "#276ef1" }}>trip</span>
-          <input style={{ flex: 1, border: "none", background: "transparent", outline: "none", fontSize: 16, fontFamily: "Inter", padding: "16px 0" }} placeholder="Where to?" value={destQuery} onChange={e => { setDestQuery(e.target.value); onSearch(e.target.value, false); }} />
-        </div>
         {destSuggestions.length > 0 && !dest && (
-          <div className="suggestions">
+          <div style={{ background: "#fff", borderRadius: 12, border: `1px solid ${OUTLINE}`, overflow: "hidden", position: "relative", zIndex: 10, marginTop: -8 }}>
             {destSuggestions.slice(0, 4).map((p, i) => (
-              <div key={i} className="suggestion-item" onClick={() => onSelect(p, false)}>
-                <span className="material-symbols-outlined" style={{ fontSize: 18, color: "#276ef1", flexShrink: 0 }}>location_on</span>
-                <div><p className="text-body-md" style={{ fontWeight: 500 }}>{p.name}</p><p className="text-label-sm text-muted">{p.address}</p></div>
+              <div key={i} onClick={() => onSelect(p, false)} style={{ padding: "10px 14px", display: "flex", alignItems: "center", gap: 10, cursor: "pointer", borderBottom: i < 3 ? `1px solid ${OUTLINE}` : "none", background: "transparent", transition: "background 0.15s" }}
+                onMouseEnter={e => e.currentTarget.style.background = "#f8f9fb"} onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
+                <span className="material-symbols-outlined" style={{ fontSize: 18, color: G, flexShrink: 0 }}>trip</span>
+                <div><p style={{ fontSize: 14, fontWeight: 500, color: T1, margin: 0 }}>{p.name}</p><p style={{ fontSize: 12, color: T2, margin: 0 }}>{p.address}</p></div>
               </div>
             ))}
           </div>
         )}
       </div>
 
-      {/* Vehicle type cards */}
-      <div style={{ marginBottom: 16 }}>
-        <label className="text-label-sm text-muted" style={{ display: "block", marginBottom: 8 }}>Vehicle type</label>
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {[
-            { id: "standard", name: "Standard", icon: "directions_car", eta: "3 min", price: "$5.50" },
-            { id: "xl", name: "XL", icon: "airport_shuttle", eta: "5 min", price: "$8.20" },
-            { id: "premium", name: "Premium", icon: "electric_car", eta: "4 min", price: "$10.50" },
-          ].map(v => (
-            <div key={v.id} className="vehicle-card" style={{ padding: "14px 16px", borderColor: "transparent", background: STITCH_GREEN + "08" }}>
-              <div style={{ width: 44, height: 44, borderRadius: 12, background: "#f6f6f6", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 22 }}>{v.icon}</span>
-              </div>
-              <div style={{ flex: 1 }}><p className="text-body-md" style={{ fontWeight: 600 }}>{v.name}</p><p className="text-label-sm text-muted">{v.eta} away</p></div>
-              <p className="text-title" style={{ fontSize: 18 }}>{v.price}</p>
-            </div>
-          ))}
-        </div>
-      </div>
+      {/* Spacer */}
+      <div style={{ flex: 1 }} />
 
-      {/* Payment method */}
-      <div style={{ marginBottom: 16 }}>
-        <label className="text-label-sm text-muted" style={{ display: "block", marginBottom: 8 }}>Payment</label>
-        <div style={{ display: "flex", gap: 10 }}>
-          <button onClick={() => setPaymentMethod("cash")}
-            style={{ flex: 1, padding: 12, borderRadius: 12, fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer", transition: "all 0.2s", fontFamily: "Inter",
-              background: paymentMethod === "cash" ? STITCH_GREEN : "#f6f6f6",
-              color: paymentMethod === "cash" ? "#fff" : "#191c1e" }}
-          >💵 Cash</button>
-          <button onClick={() => setPaymentMethod("card")}
-            style={{ flex: 1, padding: 12, borderRadius: 12, fontSize: 14, fontWeight: 600, border: "none", cursor: "pointer", transition: "all 0.2s", fontFamily: "Inter",
-              background: paymentMethod === "card" ? STITCH_GREEN : "#f6f6f6",
-              color: paymentMethod === "card" ? "#fff" : "#191c1e" }}
-          >💳 Card</button>
-        </div>
-      </div>
-
-      {/* Confirm */}
-      <button onClick={onConfirm} disabled={!pickup || !dest || !phone || loading} style={{ width: "100%", padding: 16, borderRadius: 14, fontSize: 17, fontWeight: 600, border: "none", cursor: "pointer", fontFamily: "Inter", transition: "opacity 0.2s",
-        background: STITCH_GREEN, color: "#fff", opacity: (!pickup || !dest || !phone || loading) ? 0.4 : 1 }}>
-        {loading ? "Calculating..." : "Request your ride"}
+      {/* Find a Ride button */}
+      <button onClick={onConfirm} disabled={!pickup || !dest || !phone || loading}
+        style={{
+          width: "100%", height: 56, background: G, color: "#fff",
+          borderRadius: 9999, display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: 20, fontWeight: 600, fontFamily: "Inter",
+          border: "none", cursor: "pointer",
+          boxShadow: "0px 4px 12px rgba(0,108,73,0.3)",
+          opacity: (!pickup || !dest || !phone || loading) ? 0.4 : 1,
+          transition: "opacity 0.2s, transform 0.1s"
+        }}
+      >
+        {loading ? "Calculating..." : "Find a Ride"}
       </button>
     </div>
   );

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>CYTAXI - Home Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#6c7a71",
+                        "surface-tint": "#006c49",
+                        "on-primary": "#ffffff",
+                        "tertiary-container": "#9ba2bb",
+                        "on-secondary-fixed": "#00174b",
+                        "on-surface": "#191c1e",
+                        "surface-bright": "#f8f9fb",
+                        "inverse-primary": "#4edea3",
+                        "secondary": "#0051d5",
+                        "surface": "#f8f9fb",
+                        "inverse-on-surface": "#f0f1f3",
+                        "on-primary-container": "#00422b",
+                        "surface-container-high": "#e7e8ea",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-highest": "#e1e2e4",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed": "#dae2fd",
+                        "surface-dim": "#d9dadc",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed-dim": "#bec6e0",
+                        "secondary-fixed-dim": "#b4c5ff",
+                        "on-error-container": "#93000a",
+                        "secondary-container": "#316bf3",
+                        "on-primary-fixed": "#002113",
+                        "primary-fixed": "#6ffbbe",
+                        "on-primary-fixed-variant": "#005236",
+                        "on-surface-variant": "#3c4a42",
+                        "primary-fixed-dim": "#4edea3",
+                        "secondary-fixed": "#dbe1ff",
+                        "on-background": "#191c1e",
+                        "surface-variant": "#e1e2e4",
+                        "on-tertiary-fixed-variant": "#3f465c",
+                        "tertiary": "#565e74",
+                        "background": "#f8f9fb",
+                        "on-secondary-container": "#fefcff",
+                        "surface-container-low": "#f3f4f6",
+                        "primary": "#006c49",
+                        "outline-variant": "#bbcabf",
+                        "surface-container": "#edeef0",
+                        "on-tertiary-container": "#31394d",
+                        "primary-container": "#10b981",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed": "#131b2e",
+                        "on-secondary-fixed-variant": "#003ea8",
+                        "error-container": "#ffdad6",
+                        "inverse-surface": "#2e3132",
+                        "on-error": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "container-padding-desktop": "32px",
+                        "container-padding-mobile": "16px",
+                        "unit": "4px",
+                        "stack-sm": "8px",
+                        "stack-md": "16px",
+                        "stack-lg": "24px",
+                        "pb-safe": "env(safe-area-inset-bottom)"
+                    },
+                    "fontFamily": {
+                        "title-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "title-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .map-container {
+            height: 100vh;
+            width: 100vw;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+
+        .pulse-marker {
+            width: 24px;
+            height: 24px;
+            background-color: #316bf3;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 15px rgba(49, 107, 243, 0.5);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(49, 107, 243, 0.4); }
+            70% { box-shadow: 0 0 0 20px rgba(49, 107, 243, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(49, 107, 243, 0); }
+        }
+        
+        /* Hide scrollbar for horizontal scroll */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-lg antialiased overflow-hidden">
+<!-- Level 0: Interactive Map Background -->
+<div class="map-container bg-surface-container-low" data-alt="A highly detailed aerial view map of a modern metropolitan city with clean lines, soft light mode aesthetic, featuring emerald green parks and subtle blue riverways. The map is minimalist with pale gray roads and soft white blocks for buildings, perfect as a clean background layer." data-location="New York City" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDnUTFP31BKEQkAqs1Tt_T65ggLzZPGL4VV1tBB-HbupLtiBL1234aVF84itfmpY-5J1vmXBH2VWRNuuPvg42ur4VhPqG2A344RZf4Ktngg3v8pWnjpMA1qHiY91gWyCvhyxTCpymCo6tqfWba6-fuHD6ZBipMur2DX4oePHZjMhLfSOQ7YekDksvqO4thVsLuNRSHNdq7RXsg0APjj_3GgFBOWLJn5zqa_6znIYuKsbFHw77-mLHQ-4A')">
+<!-- Center Marker -->
+<div class="pulse-marker z-10"></div>
+<!-- Dummy Vehicle Markers (Decorative) -->
+<div class="absolute top-[40%] left-[30%] w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-md border border-surface-container-high transform rotate-45">
+<span class="material-symbols-outlined text-primary text-[14px]">local_taxi</span>
+</div>
+<div class="absolute top-[60%] left-[65%] w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-md border border-surface-container-high transform -rotate-12">
+<span class="material-symbols-outlined text-primary text-[14px]">local_taxi</span>
+</div>
+</div>
+<!-- Level 2: Top App Bar (Shared Component - Web/Tablet) -->
+<header class="hidden md:flex fixed top-0 w-full z-50 bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-xl shadow-sm justify-between items-center px-container-padding-desktop py-4">
+<div class="flex items-center gap-4">
+<img alt="CYTAXI Logo" class="w-10 h-10 object-contain rounded-full shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyZKDXn10-CUTEu6Dc9UnCk7itm_dM5odGHwlzB_Rpp6Ll6g2PpaiQDCNby5xXnZqimRnRvoklqjybUiYEdgljgHnSINTv6X9t9ljLoL8w72mvlrc6CgKX_QwRtVrJrsByT-clu_EbVNjkrMBPAgIs7Zc4UziIQ7M41-834eq0jl53nyk5rUUF9XRknZvmYiuQgtt1_LVL44nt45Ca4wWRcqsgg4bWnllS7rVZcYEZMMXoEUcXLjqDlg"/>
+<h1 class="font-headline-lg text-primary tracking-tighter">CYTAXI</h1>
+</div>
+<nav class="flex gap-8">
+<a class="text-primary font-title-md border-b-2 border-primary pb-1" href="#">Home</a>
+<a class="text-on-surface-variant font-title-md hover:opacity-80 transition-opacity" href="#">Activity</a>
+<a class="text-on-surface-variant font-title-md hover:opacity-80 transition-opacity" href="#">Trips</a>
+<a class="text-on-surface-variant font-title-md hover:opacity-80 transition-opacity" href="#">Wallet</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</button>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-surface-container-high cursor-pointer shadow-sm">
+<img class="w-full h-full object-cover" data-alt="A sleek, modern profile portrait of a young professional in a light, airy environment. High quality, soft studio lighting, light mode aesthetic, emerald green and electric blue subtle accents in the background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAx7VLNtElAZi20-8yn9x-T4mXZpITxB7uoNmY4cs6-eu-505hwIyY8iDgWNTM5tAXJjk4iY_DG89KytR9dgKIFt3hbBwwJ0Fo9DvI3l2YW0xXad9Il-PLQmkz2tlM9UU5DQDS_BMt6OB8WpuEH8n4mqxkgiw5uszYOTRRoMd87NBuA-58bMzn4Ps50GtT4iyxJ4HPg3AGQwF1V7cwDiecBHyh3ETcBVQcwhDY8AVI4h1OqOsYR5Q274Q"/>
+</div>
+</div>
+</header>
+<!-- Mobile Top Header (Custom tailored for screen intent) -->
+<header class="md:hidden fixed top-0 w-full z-50 p-container-padding-mobile flex justify-between items-start pointer-events-none">
+<!-- Left: Profile & Greeting -->
+<div class="glass-panel rounded-[24px] p-2 pr-4 flex items-center gap-3 pointer-events-auto">
+<div class="w-10 h-10 rounded-full overflow-hidden border border-white/50 shadow-sm">
+<img class="w-full h-full object-cover" data-alt="A sleek, modern profile portrait of a young professional in a light, airy environment. High quality, soft studio lighting, light mode aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAokAjNLTwI79f5cI2zK74N0lKeT87ZF4ac0vvpmzDdN9Z4oRvXfRwjlxdDXceGIeMX7EdAZWRRuwMKCcyis1tSbUXdibhqPt4WwQK9ONJ6GeHYqypcSM5Ma08iLZzoakY7x-nLSFz9SCkp1XI9VhIylucuMt7PAoxZd66QQoGlyh0C8_MYAfmPPAMCckDnv6fnYYJl8u7L7KbCZDk5tkKlDtEnQxNCQNtOl2tpWVZFhl5dJq_RxO0YWA"/>
+</div>
+<div>
+<p class="font-label-md text-on-surface-variant opacity-80">Good Morning</p>
+<h2 class="font-title-md text-on-surface leading-tight">John</h2>
+</div>
+</div>
+<!-- Right: Notifications & Branding -->
+<div class="flex flex-col items-end gap-2 pointer-events-auto">
+<button class="glass-panel w-12 h-12 rounded-full flex items-center justify-center shadow-sm hover:bg-white transition-colors">
+<span class="material-symbols-outlined text-on-surface">notifications</span>
+</button>
+</div>
+</header>
+<!-- Level 1: Interaction Sheet (Floating Bottom Card) -->
+<main class="fixed bottom-0 left-0 w-full md:w-[420px] md:bottom-auto md:top-24 md:left-8 z-40">
+<!-- Main Search & Ride Sheet -->
+<div class="glass-panel rounded-t-[32px] md:rounded-[32px] shadow-[0_-4px_20px_rgba(0,0,0,0.05)] w-full pb-[100px] md:pb-6 overflow-hidden flex flex-col">
+<!-- Drag Handle (Mobile only) -->
+<div class="w-full flex justify-center pt-3 pb-2 md:hidden">
+<div class="w-12 h-1.5 bg-outline-variant rounded-full opacity-50"></div>
+</div>
+<div class="p-container-padding-mobile md:p-container-padding-desktop flex flex-col gap-stack-lg">
+<!-- Location Inputs -->
+<div class="flex flex-col gap-3 relative">
+<!-- Connecting Line -->
+<div class="absolute left-[20px] top-[24px] bottom-[24px] w-0.5 bg-surface-container-highest z-0"></div>
+<!-- Pickup -->
+<div class="flex items-center gap-3 relative z-10">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-secondary text-[20px]" style="font-variation-settings: 'FILL' 1;">my_location</span>
+</div>
+<div class="flex-1 bg-surface-container-low rounded-xl px-4 py-3 border border-transparent focus-within:border-secondary transition-colors">
+<p class="font-label-md text-on-surface-variant mb-0.5">Current Location</p>
+<input class="w-full bg-transparent border-none p-0 font-body-lg text-on-surface focus:ring-0" readonly="" type="text" value="120 Broadway, New York"/>
+</div>
+</div>
+<!-- Destination -->
+<div class="flex items-center gap-3 relative z-10">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-surface text-[20px]" style="font-variation-settings: 'FILL' 1;">location_on</span>
+</div>
+<div class="flex-1 bg-surface-bright rounded-xl px-4 py-3 border border-surface-container-high shadow-sm focus-within:border-secondary transition-colors">
+<input class="w-full bg-transparent border-none p-0 font-title-md text-on-surface placeholder:text-on-surface-variant focus:ring-0" placeholder="Where to?" type="text"/>
+</div>
+</div>
+</div>
+<!-- Ride Options (Horizontal Scroll) -->
+<div>
+<h3 class="font-title-md text-on-surface mb-3">Ride Options</h3>
+<div class="flex gap-4 overflow-x-auto no-scrollbar pb-2 snap-x px-1">
+<!-- Option 1: Economy (Active) -->
+<div class="snap-start shrink-0 w-[140px] bg-white rounded-[24px] p-4 border-2 border-primary-container shadow-sm flex flex-col gap-2 relative cursor-pointer transform transition-transform hover:scale-105">
+<div class="absolute -top-2 -right-2 bg-secondary text-white font-label-md px-2 py-1 rounded-full text-[10px] shadow-sm flex items-center gap-1">
+<span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
+                                Fastest
+                            </div>
+<img class="w-full h-16 object-contain mb-1" data-alt="A clean, minimalist 3D render of a compact modern sedan car, white color, viewed from a slight angle. Placed on a transparent or pure white background with soft shadows, fitting a modern app UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuACvP0cf5UaslYTvSIISU9lss6WLcD5Tg_lRX7roG0rzlJLkWlY6uOw96W2AY6LwDilpMyVd0jiKupiCtlJ85aEXNqrv7deBHvQsOOazaMBGRVE1Fp3196edH-r57HYKXSRooEg73riWDej_kl9n5wf1iLYewZIDxhUAYfC-bk8kh26uIVIHblKesl7EM0_lli8LNPDJAIZ9E35egHbAl7taODQ420AgkyGHOBDFt-it_mRsrZwQspF-w"/>
+<div>
+<div class="flex justify-between items-center">
+<span class="font-title-md text-on-surface">Economy</span>
+<span class="font-label-md text-on-surface-variant">3 min</span>
+</div>
+<span class="font-title-md text-primary mt-1 block">$12.50</span>
+</div>
+</div>
+<!-- Option 2: Comfort -->
+<div class="snap-start shrink-0 w-[140px] bg-surface-bright rounded-[24px] p-4 border border-surface-container-high flex flex-col gap-2 cursor-pointer transform transition-transform hover:scale-105">
+<img class="w-full h-16 object-contain mb-1" data-alt="A clean, minimalist 3D render of a premium luxury sedan car, dark sleek color, viewed from a slight angle. Placed on a transparent or pure white background with soft shadows, fitting a modern app UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTI_IPAnrdnQgemZ5jBb_hVE1b1e-nm8pvb5dfbhnv-67Uwu0p-N0-rnmLdcNq7fx80t2rAT6WKe2dFxCwnpmZVad6zuCMoCWRlUyIVJjKqWrakOhpPk8guaCyNA1o7iKtfwfMNq15wX_1bYTy_LofxfPGAds1gXdieAClPoC0MsbMEdeRVGHc9BxcL-0qcMUqpL9nmeNHz-ikDJ0FRFXXgIcwYzlXag1XieTl8qrPzVlasF-pL99CSA"/>
+<div>
+<div class="flex justify-between items-center">
+<span class="font-body-lg font-semibold text-on-surface">Comfort</span>
+<span class="font-label-md text-on-surface-variant">5 min</span>
+</div>
+<span class="font-body-lg text-on-surface-variant mt-1 block">$18.20</span>
+</div>
+</div>
+<!-- Option 3: XL -->
+<div class="snap-start shrink-0 w-[140px] bg-surface-bright rounded-[24px] p-4 border border-surface-container-high flex flex-col gap-2 cursor-pointer transform transition-transform hover:scale-105">
+<img class="w-full h-16 object-contain mb-1" data-alt="A clean, minimalist 3D render of a large modern SUV, silver color, viewed from a slight angle. Placed on a transparent or pure white background with soft shadows, fitting a modern app UI." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWQATfwZhz0Gy3GNKPjeSiBUlh_baLrkmWumtlCRw6UBKPXKhFH5MmHnc0f7HPtwj2R79NWL3VjZLpUV03GxY_nF-FTIRdLr507gGt8XZ3RizhynRlrrJfVNYsS-jW53Y0AtMzloxTVVLLyteHtRxilCv5PRNAv0px_nAh0TWR0nWlk7IQxmMGGgRGYA5vDts6381Vf3xhmVBMGuLSafdlqKhhHNVyWW5JDNxDblE6oUz7unP5dq_wRA"/>
+<div>
+<div class="flex justify-between items-center">
+<span class="font-body-lg font-semibold text-on-surface">XL</span>
+<span class="font-label-md text-on-surface-variant">7 min</span>
+</div>
+<span class="font-body-lg text-on-surface-variant mt-1 block">$24.00</span>
+</div>
+</div>
+</div>
+</div>
+<!-- CTA Button -->
+<button class="w-full h-[56px] bg-primary text-on-primary rounded-[20px] font-title-md shadow-lg flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all">
+                    Request Economy
+                    <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar (Shared Component - Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full h-20 flex justify-around items-center px-4 pb-safe z-50 bg-white/80 dark:bg-surface-container/80 backdrop-blur-xl shadow-[0_-4px_20px_rgba(0,0,0,0.05)] rounded-t-lg">
+<!-- Active: Home -->
+<a class="flex flex-col items-center justify-center bg-primary-container/20 text-on-primary-container rounded-xl px-4 py-2 scale-105 transition-all duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-md text-label-md mt-1">Home</span>
+</a>
+<!-- Inactive -->
+<a class="flex flex-col items-center justify-center text-outline dark:text-on-surface-variant opacity-60 hover:bg-surface-container-high transition-colors px-4 py-2 rounded-xl" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-md text-label-md mt-1">Activity</span>
+</a>
+<a class="flex flex-col items-center justify-center text-outline dark:text-on-surface-variant opacity-60 hover:bg-surface-container-high transition-colors px-4 py-2 rounded-xl" href="#">
+<span class="material-symbols-outlined">route</span>
+<span class="font-label-md text-label-md mt-1">Trips</span>
+</a>
+<a class="flex flex-col items-center justify-center text-outline dark:text-on-surface-variant opacity-60 hover:bg-surface-container-high transition-colors px-4 py-2 rounded-xl" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-label-md text-label-md mt-1">Wallet</span>
+</a>
+<a class="flex flex-col items-center justify-center text-outline dark:text-on-surface-variant opacity-60 hover:bg-surface-container-high transition-colors px-4 py-2 rounded-xl" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md text-label-md mt-1">Profile</span>
+</a>
+</nav>
+</body></html>
