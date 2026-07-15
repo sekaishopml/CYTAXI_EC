@@ -1,0 +1,14 @@
+go 1.22.0
+
+use (
+	./backend
+	./backend/engines/conversation
+	./backend/engines/customer
+	./backend/engines/driver
+	./backend/engines/geospatial
+	./backend/engines/mobility
+	./backend/engines/policy
+	./backend/engines/pricing
+	./backend/engines/trip
+	./backend/gateways/whatsapp
+)

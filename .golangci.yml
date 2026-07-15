@@ -1,0 +1,31 @@
+run:
+  deadline: 5m
+  tests: true
+
+linters:
+  enable:
+    - gofmt
+    - govet
+    - errcheck
+    - staticcheck
+    - gosimple
+    - ineffassign
+    - unused
+    - misspell
+    - revive
+    - gocyclo
+    - gosec
+    - exportloopref
+
+linters-settings:
+  gocyclo:
+    min-complexity: 15
+  revive:
+    min-confidence: 0.8
+
+issues:
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - errcheck
+        - gosec
