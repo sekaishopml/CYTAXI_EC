@@ -27,12 +27,10 @@ export function FormState({ phone, setPhone, name, setName, pickupQuery, setPick
   return (
     <div style={{ padding: "4px 14px 0", display: "flex", flexDirection: "column", gap: 8 }}>
 
-      {/* Greeting — compacto */}
       <p style={{ fontSize: 15, fontWeight: 600, color: T1, margin: 0 }}>
-        Good morning, <span style={{ color: G }}>{name || "Alex"}</span>
+        Buenos días, <span style={{ color: G }}>{name || "Alex"}</span>
       </p>
 
-      {/* Glassmorphic Card compacto */}
       <div style={{
         background: "rgba(255,255,255,0.92)",
         backdropFilter: "blur(16px)",
@@ -43,37 +41,35 @@ export function FormState({ phone, setPhone, name, setName, pickupQuery, setPick
         display: "flex", flexDirection: "column", gap: 8,
         position: "relative", overflow: "hidden"
       }}>
-        {/* Pickup */}
+        {/* Origen */}
         <div style={{ display: "flex", alignItems: "center", gap: 8, background: INPUT, borderRadius: 10, padding: "8px 10px", border: "1px solid #bbcabf33" }}>
           <span className="material-symbols-outlined" style={{ fontSize: 18, color: G, fontVariationSettings: "'FILL' 1" }}>my_location</span>
           <div style={{ flex: 1 }}>
-            <label style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.05em", color: T2, fontFamily: "Inter" }}>Pickup</label>
+            <label style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.05em", color: T2, fontFamily: "Inter" }}>Origen</label>
             <input style={{ background: "transparent", border: "none", padding: 0, fontSize: 14, fontFamily: "Inter", color: T1, width: "100%", outline: "none" }}
-              placeholder="Search pickup" value={pickupQuery} onChange={e => { setPickupQuery(e.target.value); onSearch(e.target.value, true); }} autoFocus />
+              placeholder="Buscar dirección de salida" value={pickupQuery} onChange={e => { setPickupQuery(e.target.value); onSearch(e.target.value, true); }} autoFocus />
           </div>
         </div>
 
-        {/* Divisor vertical */}
         <div style={{ position: "absolute", left: 28, top: 44, height: 24, width: 2, background: `${G}40` }} />
 
-        {/* Destination */}
+        {/* Destino */}
         <div style={{ display: "flex", alignItems: "center", gap: 8, background: INPUT, borderRadius: 10, padding: "8px 10px", border: "1px solid ${G}4D" }}>
           <span className="material-symbols-outlined" style={{ fontSize: 18, color: G }}>search</span>
           <div style={{ flex: 1 }}>
-            <label style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.05em", color: G, fontFamily: "Inter" }}>Where to</label>
+            <label style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.05em", color: G, fontFamily: "Inter" }}>Destino</label>
             <input style={{ background: "transparent", border: "none", padding: 0, fontSize: 14, fontFamily: "Inter", color: T1, width: "100%", outline: "none" }}
-              placeholder="Search destination" value={destQuery} onChange={e => { setDestQuery(e.target.value); onSearch(e.target.value, false); }} />
+              placeholder="Buscar destino" value={destQuery} onChange={e => { setDestQuery(e.target.value); onSearch(e.target.value, false); }} />
           </div>
         </div>
 
-        {/* Phone compacto */}
+        {/* Teléfono */}
         <div style={{ display: "flex", alignItems: "center", gap: 8, background: INPUT, borderRadius: 10, padding: "8px 10px", border: "1px solid #bbcabf33" }}>
           <span className="material-symbols-outlined" style={{ fontSize: 16, color: T2 }}>phone</span>
           <input style={{ background: "transparent", border: "none", padding: 0, fontSize: 14, fontFamily: "Inter", color: T1, width: "100%", outline: "none" }}
-            type="tel" placeholder="Phone" value={phone} onChange={e => setPhone(e.target.value)} />
+            type="tel" placeholder="Teléfono" value={phone} onChange={e => setPhone(e.target.value)} />
         </div>
 
-        {/* Suggestions pickup */}
         {pickupSuggestions.length > 0 && !pickup && (
           <div style={{ background: "#fff", borderRadius: 10, border: "1px solid #bbcabf", overflow: "hidden", marginTop: -4 }}>
             {pickupSuggestions.slice(0, 2).map((p, i) => (
@@ -99,7 +95,6 @@ export function FormState({ phone, setPhone, name, setName, pickupQuery, setPick
         )}
       </div>
 
-      {/* Find a Ride — más pequeño */}
       <button onClick={onConfirm} disabled={!pickup || !dest || !phone || loading}
         style={{
           width: "100%", height: 42, background: G, color: "#fff",
@@ -109,7 +104,7 @@ export function FormState({ phone, setPhone, name, setName, pickupQuery, setPick
           opacity: (!pickup || !dest || !phone || loading) ? 0.4 : 1,
           transition: "opacity 0.2s"
         }}
-      >{loading ? "..." : "Find a Ride"}</button>
+      >{loading ? "Calculando..." : "Buscar viaje"}</button>
     </div>
   );
 }

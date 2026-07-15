@@ -17,52 +17,50 @@ export function CompletedState({ fare, driver, pickup, dest, onNewTrip, paymentM
 
   return (
     <div style={{ padding: "12px 20px 24px", textAlign: "center" }}>
-      <div className="sheet-handle" />
-      <div style={{ fontSize: 56, marginBottom: 8 }}>✅</div>
-      <h2 className="text-headline-mobile" style={{ marginBottom: 16 }}>Trip Completed</h2>
+      <div style={{ fontSize: 44, marginBottom: 6 }}>✅</div>
+      <p style={{ fontSize: 20, fontWeight: 600, marginBottom: 14 }}>Viaje completado</p>
 
-      {/* Route */}
       {pickup && dest && (
-        <div style={{ background: "var(--uk-input-bg)", borderRadius: 16, padding: 14, marginBottom: 16, textAlign: "left" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
-            <div className="dot dot-pickup" /><p className="text-body-md">{pickup.name}</p>
+        <div style={{ background: "#f6f6f6", borderRadius: 14, padding: 12, marginBottom: 14, textAlign: "left" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 16, color: "#006c49" }}>location_on</span>
+            <p style={{ fontSize: 13, margin: 0 }}>{pickup.name}</p>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <div className="dot dot-dest" /><p className="text-body-md">{dest.name}</p>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 16, color: "#276ef1" }}>trip</span>
+            <p style={{ fontSize: 13, margin: 0 }}>{dest.name}</p>
           </div>
         </div>
       )}
 
-      {/* Fare */}
       {fare && (
-        <div style={{ background: "var(--uk-input-bg)", borderRadius: 16, padding: 16, marginBottom: 16, textAlign: "left" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }} className="text-body-md"><span className="text-muted">Distance</span><span>{fare.distance_km.toFixed(1)} km</span></div>
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }} className="text-body-md"><span className="text-muted">Time</span><span>{fare.eta_minutes} min</span></div>
-          <div className="divider" />
-          <div style={{ display: "flex", justifyContent: "space-between" }} className="text-headline-mobile"><span>Total</span><span>${fare.total.toFixed(2)}</span></div>
-          <div className="text-label-sm text-muted" style={{ textAlign: "right", marginTop: 4 }}>via {paymentMethod === "cash" ? "Cash" : "Card"}</div>
+        <div style={{ background: "#f6f6f6", borderRadius: 14, padding: 14, marginBottom: 14, textAlign: "left" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}><span style={{ fontSize: 13, color: "#3c4a42" }}>Distancia</span><span style={{ fontSize: 13 }}>{fare.distance_km.toFixed(1)} km</span></div>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}><span style={{ fontSize: 13, color: "#3c4a42" }}>Tiempo</span><span style={{ fontSize: 13 }}>{fare.eta_minutes} min</span></div>
+          <div style={{ height: 1, background: "#d9dadc", margin: "6px 0" }} />
+          <div style={{ display: "flex", justifyContent: "space-between" }}><span style={{ fontSize: 18, fontWeight: 700 }}>Total</span><span style={{ fontSize: 18, fontWeight: 700, color: "#006c49" }}>${fare.total.toFixed(2)}</span></div>
+          <p style={{ fontSize: 11, color: "#3c4a42", textAlign: "right", margin: "2px 0 0" }}>via {paymentMethod === "cash" ? "Efectivo" : "Tarjeta"}</p>
         </div>
       )}
 
-      {/* Rating */}
       {!rated ? (
-        <div style={{ marginBottom: 16 }}>
-          <p className="text-body-md text-muted" style={{ marginBottom: 8 }}>Rate your driver</p>
-          <div style={{ display: "flex", justifyContent: "center", gap: 8 }}>
+        <div style={{ marginBottom: 14 }}>
+          <p style={{ fontSize: 13, color: "#3c4a42", marginBottom: 6 }}>Califica a tu conductor</p>
+          <div style={{ display: "flex", justifyContent: "center", gap: 6 }}>
             {[1, 2, 3, 4, 5].map(s => (
               <button key={s} onClick={() => { setRating(s); setRated(true); }}
-                style={{ fontSize: 36, background: "none", border: "none", cursor: "pointer", transition: "transform 0.2s" }}
-                onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.2)")}
-                onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}
+                style={{ fontSize: 28, background: "none", border: "none", cursor: "pointer", transition: "transform 0.2s" }}
               >{s <= rating ? "⭐" : "☆"}</button>
             ))}
           </div>
         </div>
       ) : (
-        <p className="text-body-md" style={{ color: "#16a34a", fontWeight: 600, marginBottom: 16 }}>⭐ {rating} stars — Thank you!</p>
+        <p style={{ fontSize: 14, color: "#16a34a", fontWeight: 600, marginBottom: 14 }}>⭐ {rating} estrellas — ¡Gracias!</p>
       )}
 
-      <button onClick={onNewTrip} className="btn btn-primary">New Trip</button>
+      <button onClick={onNewTrip} style={{ width: "100%", height: 44, background: "#006c49", color: "#fff", borderRadius: 9999, fontSize: 15, fontWeight: 600, fontFamily: "Inter", border: "none", cursor: "pointer", boxShadow: "0px 4px 12px rgba(0,108,73,0.3)" }}>
+        Nuevo viaje
+      </button>
     </div>
   );
 }
