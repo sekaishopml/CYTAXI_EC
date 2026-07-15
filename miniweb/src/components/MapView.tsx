@@ -11,9 +11,10 @@ interface MapViewProps {
   onCenterChange?: (coords: { lat: number; lng: number; address: string }) => void;
   onMapReady?: () => void;
   showPin?: boolean;
+  interactive?: boolean;
 }
 
-export function MapView({ onCenterChange, onMapReady, showPin = true }: MapViewProps) {
+export function MapView({ onCenterChange, onMapReady, showPin = true, interactive = true }: MapViewProps) {
   const mapRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const initialized = useRef(false);
@@ -50,6 +51,23 @@ export function MapView({ onCenterChange, onMapReady, showPin = true }: MapViewP
     map.on("locationerror", () => { reverseGeocode(-2.1894, -79.8893); });
     return () => { map.remove(); initialized.current = false; };
   }, []);
+
+  // Toggle map interactivity based on prop
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    if (interactive) {
+      if (map.dragging) map.dragging.enable();
+      if (map.scrollWheelZoom) map.scrollWheelZoom.enable();
+      if (map.touchZoom) map.touchZoom.enable();
+      if (map.doubleClickZoom) map.doubleClickZoom.enable();
+    } else {
+      if (map.dragging) map.dragging.disable();
+      if (map.scrollWheelZoom) map.scrollWheelZoom.disable();
+      if (map.touchZoom) map.touchZoom.disable();
+      if (map.doubleClickZoom) map.doubleClickZoom.disable();
+    }
+  }, [interactive]);
 
   return (
     <>
