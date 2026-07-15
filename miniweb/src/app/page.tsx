@@ -68,9 +68,9 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* Bottom panel */}
-      <div ref={flow.sheetRef} style={{ width: "100%", flex: 1, overflow: "hidden", background: "var(--uk-background)", display: "flex", flexDirection: "column", touchAction: "auto", WebkitOverflowScrolling: "touch" }}>
-        <div ref={flow.contentRef} style={{ flex: 1, overflowY: "auto", overflowX: "hidden" }}>
+      {/* Bottom panel — sin scroll, contenido llena el espacio */}
+      <div ref={flow.sheetRef} style={{ width: "100%", flex: 1, overflow: "hidden", background: "var(--uk-background)", display: "flex", flexDirection: "column", paddingBottom: keyboardOpen ? 0 : 56 }}>
+        <div ref={flow.contentRef} style={{ flex: 1, overflow: "hidden", display: "flex", flexDirection: "column" }}>
           {flow.state === "pickup_select" && <PickUpStep {...flow.pickupStepProps} />}
           {flow.state === "input" && <FormState {...flow.destStepProps} />}
           {flow.state === "confirm" && <ConfirmState {...flow.confirmProps} />}
