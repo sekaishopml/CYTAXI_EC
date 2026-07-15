@@ -71,13 +71,14 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* Bottom panel */}
+      {/* Bottom panel — sin scroll */}
       <div ref={flow.sheetRef} style={{
         width: "100%", flex: 1,
-        overflowY: "auto", overflowX: "hidden",
+        overflow: "hidden",
         background: "var(--uk-background)",
+        display: "flex", flexDirection: "column",
       }}>
-        <div ref={flow.contentRef} style={{ minHeight: "100%" }}>
+        <div ref={flow.contentRef} style={{ flex: 1, overflow: "hidden" }}>
           {renderSheet()}
         </div>
       </div>
