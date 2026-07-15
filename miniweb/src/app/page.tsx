@@ -55,21 +55,25 @@ export default function HomePage() {
   };
 
   return (
-    <div style={{ position: "relative", width: "100vw", height: "100dvh", overflow: "hidden" }}>
-      <MapView
-        pickupCoords={flow.pickup ? { lat: flow.pickup.lat, lng: flow.pickup.lng } : null}
-        destCoords={flow.dest ? { lat: flow.dest.lat, lng: flow.dest.lng } : null}
-        driverCoords={flow.driver?.lat && flow.driver?.lng ? { lat: flow.driver.lat, lng: flow.driver.lng } : null}
-        polyline={flow.route?.polyline || null}
-        fitBounds={flow.state === "confirm"}
-      />
+    <div style={{ position: "relative", width: "100vw", height: "100dvh", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+      {/* Top section: map */}
+      <div style={{ position: "relative", width: "100%", height: "50dvh", flexShrink: 0 }}>
+        <MapView
+          pickupCoords={flow.pickup ? { lat: flow.pickup.lat, lng: flow.pickup.lng } : null}
+          destCoords={flow.dest ? { lat: flow.dest.lat, lng: flow.dest.lng } : null}
+          driverCoords={flow.driver?.lat && flow.driver?.lng ? { lat: flow.driver.lat, lng: flow.driver.lng } : null}
+          polyline={flow.route?.polyline || null}
+          fitBounds={flow.state === "confirm"}
+        />
+      </div>
 
       {(flow.state === "driver_found" || flow.state === "in_progress") && flow.eta > 0 && (
         <div className="eta-box">{Math.ceil(flow.eta / 60)} min away</div>
       )}
 
-      <div ref={flow.sheetRef} className="sheet">
-        <div ref={flow.contentRef}>
+      {/* Bottom section: sheet (hidden initially, GSAP slides up) */}
+      <div ref={flow.sheetRef} style={{ width: "100%", height: "50dvh", overflow: "hidden", background: "var(--uk-surface-container-lowest)", transform: "translateY(100%)" }}>
+        <div ref={flow.contentRef} style={{ height: "100%", overflowY: "auto" }}>
           {renderSheet()}
         </div>
       </div>

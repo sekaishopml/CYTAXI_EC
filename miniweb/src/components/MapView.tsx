@@ -95,9 +95,10 @@ export function MapView({ pickupCoords, destCoords, driverCoords, polyline, fitB
 
   return (
     <>
-      <div ref={containerRef} style={{ width: "100%", height: "100%", position: "absolute", top: 0, left: 0 }} />
+      <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
       {mapReady && (
         <button className="locate-btn" onClick={() => { mapRef.current?.locate({ setView: true, maxZoom: 16 }); }}
+          style={{ position: "fixed", right: "16px", bottom: "calc(50dvh + 20px)", zIndex: 9, width: 44, height: 44, borderRadius: 14, background: "var(--uk-surface-container-lowest)", border: "none", boxShadow: "0 2px 8px rgba(0,0,0,0.08)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}
           aria-label="My location">📍</button>
       )}
     </>

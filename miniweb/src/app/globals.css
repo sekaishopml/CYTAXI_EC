@@ -54,13 +54,10 @@
 @layer components {
   /* Bottom Sheet — Level 2 Elevation */
   .sheet {
-    position: fixed; bottom: 0; left: 0; right: 0; z-index: 10;
     background: var(--uk-surface-container-lowest);
     border-radius: 24px 24px 0 0;
-    box-shadow: var(--uk-sheet-shadow);
-    max-height: 56dvh; min-height: 30dvh;
-    overflow-y: auto;
-    transform: translateY(100%);
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+    overflow: hidden;
     will-change: transform;
   }
   .sheet-handle {
