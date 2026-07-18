@@ -32,9 +32,12 @@ func NewTripService(
 	}
 }
 
-func (s *TripService) Create(ctx context.Context, cmd command.CreateTrip) error {
+func (s *TripService) Create(ctx context.Context, cmd command.CreateTrip) (*trip.Trip, error) {
 	t := trip.NewTrip(cmd.CustomerID, cmd.Passenger, cmd.Pickup, cmd.Destination)
-	return s.tripRepo.Save(ctx, t)
+	if err := s.tripRepo.Save(ctx, t); err != nil {
+		return nil, err
+	}
+	return t, nil
 }
 
 func (s *TripService) AssignDriver(ctx context.Context, cmd command.AssignDriver) error {

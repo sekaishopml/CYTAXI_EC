@@ -16,19 +16,49 @@ interface TrackingStateProps {
   paymentMethod: "cash" | "card";
   pickup: Place | null;
   dest: Place | null;
+  onCancel?: () => void;
+  onRejectDriver?: () => void;
 }
 
-export function TrackingState({ state, driver, eta, route, paymentMethod }: TrackingStateProps) {
+export function TrackingState({ state, driver, eta, route, paymentMethod, onCancel, onRejectDriver }: TrackingStateProps) {
   const driverPhoto = "https://lh3.googleusercontent.com/aida-public/AB6AXuCkHhJFLUV3YsxXFylEOTUJy2z4lY_LCg9OoNenlSm_K-ZxKIkS9pQ_fdp981WEoFsla2qlTjop9e_QlOvKVTB_5InZjlT-19WQ3Lud2rbaohDgGg0IGYHSEm_leWW44fU7MKi6axbn51drsGLkfBYn3xsO6BrI0CmJAmuUNy9K_R1-OovQ5pbx9r7C4T_i08qo3ZQrfjBmVFg_UHQiBpZp_qO7JdGdJNdkiDwACi1XOPZD5m-ALdow1g";
 
   if (state === "searching") {
     return (
-      <div style={{ padding: "16px 20px", textAlign: "center" }}>
-        <div style={{ padding: "24px 0" }}>
-          <div style={{ width: 44, height: 44, border: "4px solid #e7e8ea", borderTopColor: G, borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto 16px" }} />
-          <p style={{ fontSize: 18, fontWeight: 600, marginBottom: 6 }}>Buscando conductor...</p>
-          <p style={{ fontSize: 13, color: T2 }}>Conectando con vehículos cercanos</p>
+      <div style={{ padding: "20px", textAlign: "center" }}>
+        <div style={{ padding: "16px 0" }}>
+          {/* Pulso animado */}
+          <div style={{ position: "relative", width: 56, height: 56, margin: "0 auto 20px" }}>
+            <div style={{ position: "absolute", inset: 0, borderRadius: "50%", background: `${G}20`, animation: "pulse 2s cubic-bezier(0.4,0,0.6,1) infinite" }} />
+            <div style={{ position: "absolute", inset: 4, borderRadius: "50%", background: `${G}15`, animation: "pulse 2s cubic-bezier(0.4,0,0.6,1) 0.3s infinite" }} />
+            <div style={{ position: "absolute", inset: 8, borderRadius: "50%", background: `${G}40`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <span style={{ fontSize: 20 }}>🔍</span>
+            </div>
+          </div>
+          <p style={{ fontSize: 18, fontWeight: 600, marginBottom: 4, color: T1 }}>Buscando conductor</p>
+          <p style={{ fontSize: 13, color: "#8a8a8a" }}>Conectando con los mejores conductores cercanos</p>
         </div>
+
+        {/* Shimmer skeleton cards */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 8 }}>
+          {[1,2,3].map(i => (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px", borderRadius: 12, background: "rgba(255,255,255,0.7)", overflow: "hidden", position: "relative" }}>
+              <div style={{ width: 44, height: 44, borderRadius: "50%", background: "linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%)", backgroundSize: "200% 100%", animation: "shimmer 1.5s ease-in-out infinite" }} />
+              <div style={{ flex: 1 }}>
+                <div style={{ height: 12, borderRadius: 6, background: "linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%)", backgroundSize: "200% 100%", animation: "shimmer 1.5s ease-in-out infinite", width: "60%", marginBottom: 6 }} />
+                <div style={{ height: 10, borderRadius: 5, background: "linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%)", backgroundSize: "200% 100%", animation: "shimmer 1.5s ease-in-out 0.2s infinite", width: "80%" }} />
+              </div>
+              <div style={{ width: 40, height: 10, borderRadius: 5, background: "linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%)", backgroundSize: "200% 100%", animation: "shimmer 1.5s ease-in-out 0.1s infinite" }} />
+            </div>
+          ))}
+        </div>
+
+        {onCancel && (
+          <button onClick={onCancel}
+            style={{ marginTop: 16, padding: "12px 28px", background: "transparent", color: "#ba1a1a", border: "1px solid rgba(186,26,26,0.2)", borderRadius: 12, fontSize: 14, fontWeight: 600, fontFamily: "Inter", cursor: "pointer", transition: "all 0.15s" }}>
+            Cancelar
+          </button>
+        )}
       </div>
     );
   }
@@ -41,7 +71,7 @@ export function TrackingState({ state, driver, eta, route, paymentMethod }: Trac
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14 }}>
         <div>
           <p style={{ fontSize: 20, fontWeight: 600, color: T1, margin: 0 }}>
-            Llega en <span style={{ color: G }}>{Math.ceil(eta / 60)} min</span>
+            Llega en <span style={{ color: G }}>{eta <= 5 ? "Llegando..." : `${Math.ceil(eta / 60)} min`}</span>
           </p>
           <p style={{ fontSize: 13, color: T2, margin: "2px 0 0", display: "flex", alignItems: "center", gap: 4 }}>
             <span className="material-symbols-outlined" style={{ fontSize: 14 }}>distance</span>
@@ -67,12 +97,13 @@ export function TrackingState({ state, driver, eta, route, paymentMethod }: Trac
         </div>
       </div>
 
-      {/* Timeline */}
+      {/* Timeline dinámico */}
       <div style={{ marginBottom: 14 }}>
-        <TimelineStep icon="check" label="Viaje solicitado" sublabel="14:15" active={true} completed={true} />
-        <TimelineStep icon="person" label="Conductor asignado" sublabel="14:16" active={true} completed={true} />
-        <TimelineStep icon="dot" label="Conductor llegando" sublabel="Acercándose al origen" active={true} current={true} />
-        <TimelineStep icon="location_on" label="Recogida" sublabel="Esperando llegada" active={true} completed={false} />
+        <TimelineStep label="Viaje solicitado" active={true} completed={true} />
+        <TimelineStep label="Conductor asignado" active={true} completed={state !== "driver_found"} current={state === "driver_found"} />
+        <TimelineStep label="Conductor en camino" active={state === "in_progress" || state === "completed"} completed={state === "completed"} current={state === "in_progress"} />
+        {state === "in_progress" && <TimelineStep label="En viaje" active={true} current={false} />}
+        <TimelineStep label="Destino alcanzado" active={state === "completed"} completed={state === "completed"} />
       </div>
 
       {/* Botones de acción */}
@@ -85,7 +116,7 @@ export function TrackingState({ state, driver, eta, route, paymentMethod }: Trac
           <span className="material-symbols-outlined" style={{ fontSize: 18 }}>chat</span>
           Mensaje
         </button>
-        <button style={{ width: 50, height: 50, background: ERR_BG, color: ERR, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", border: "none", cursor: "pointer", flexShrink: 0 }}>
+        <button onClick={onRejectDriver} style={{ width: 50, height: 50, background: ERR_BG, color: ERR, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", border: "none", cursor: "pointer", flexShrink: 0 }}>
           <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
         </button>
       </div>
@@ -98,20 +129,11 @@ export function TrackingState({ state, driver, eta, route, paymentMethod }: Trac
   );
 }
 
-function TimelineStep({ icon, label, sublabel, active, completed, current }: { icon: string; label: string; sublabel: string; active: boolean; completed?: boolean; current?: boolean }) {
+function TimelineStep({ label, active, completed, current }: { label: string; active: boolean; completed?: boolean; current?: boolean }) {
   return (
-    <div style={{ display: "flex", alignItems: "flex-start", gap: 10, position: "relative", opacity: current || completed ? 1 : 0.5, marginBottom: 14 }}>
-      <div style={{ position: "relative", zIndex: 10, width: 22, height: 22, borderRadius: "50%", background: current ? "#fff" : G, border: current ? `2px solid ${G}` : "none", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-        {current ? (
-          <div style={{ width: 7, height: 7, borderRadius: "50%", background: G, animation: "pulse 1.5s infinite" }} />
-        ) : (
-          <span className="material-symbols-outlined" style={{ fontSize: 12, color: "#fff" }}>{icon}</span>
-        )}
-      </div>
-      <div>
-        <p style={{ fontSize: 13, fontWeight: 600, color: current ? G : T1, margin: 0 }}>{label}</p>
-        <p style={{ fontSize: 11, color: T2, margin: 0 }}>{sublabel}</p>
-      </div>
+    <div style={{ display: "flex", alignItems: "flex-start", gap: 10, opacity: current || completed ? 1 : 0.45, marginBottom: 12 }}>
+      <div style={{ width: 10, height: 10, borderRadius: "50%", background: completed ? G : current ? G : T2, marginTop: 4, flexShrink: 0, boxShadow: current ? `0 0 0 4px ${G}20` : "none", animation: current ? "pulse 1.5s infinite" : "none" }} />
+      <p style={{ fontSize: 13, fontWeight: 500, color: current ? G : T1, margin: 0 }}>{label}</p>
     </div>
   );
 }

@@ -30,7 +30,7 @@ func Load() (*Config, error) {
 		Port:     port,
 		Env:      env("APP_ENV", "development"),
 		LogLevel: env("LOG_LEVEL", "info"),
-		Provider: env("GEOSPATIAL_PROVIDER", "google_maps"),
+		Provider: env("GEOSPATIAL_PROVIDER", "openstreetmap"),
 		APIKey:   env("GEOSPATIAL_API_KEY", ""),
 		CacheTTL: cacheTTL,
 	}, nil

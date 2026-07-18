@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/sekaishopml/cytaxi/backend/engines/geospatial/internal/geospatial/domain/service"
 	"github.com/sekaishopml/cytaxi/backend/engines/geospatial/internal/geospatial/domain/types"
 )
 
@@ -37,7 +38,7 @@ type OSRMRoute struct {
 	Distance float64 `json:"distance"`
 	Duration float64 `json:"duration"`
 	Geometry string  `json:"geometry"`
-	Legs     []OSRMLeg `json:"legs"`
+	Legs     []OSRLeg `json:"legs"`
 }
 
 type OSRLeg struct {
@@ -51,7 +52,7 @@ type Provider struct {
 	userAgent string
 }
 
-func NewProvider(client *http.Client) types.GeospatialProvider {
+func NewProvider(client *http.Client) service.GeospatialProvider {
 	if client == nil {
 		client = &http.Client{Timeout: 10 * time.Second}
 	}

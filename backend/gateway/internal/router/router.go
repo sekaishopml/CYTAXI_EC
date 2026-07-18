@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"strings"
 
 	"github.com/sekaishopml/cytaxi/backend/gateway/internal/middleware"
 )
@@ -46,6 +47,21 @@ func (r *GatewayRouter) RegisterRoute(service, method, path, targetService strin
 	target, _ := url.Parse(backendURL)
 	proxy := httputil.NewSingleHostReverseProxy(target)
 
+	// Calcular el prefijo a remover: "/api/v1/<engine>/" o "/api/v1/<engine>" (health)
+	// Path viene como "/api/v1/<engine>/<subpath>" o "/api/v1/<engine>/health"
+	// Necesitamos remover "/api/v1/<engine>" y dejar el "/" inicial o el subpath.
+	prefixToStrip := "/api/v1/" + service
+	originalDirector := proxy.Director
+	proxy.Director = func(req *http.Request) {
+		originalDirector(req)
+		// Remover prefijo /api/v1/<engine> del path
+		newPath := strings.TrimPrefix(req.URL.Path, prefixToStrip)
+		if !strings.HasPrefix(newPath, "/") {
+			newPath = "/" + newPath
+		}
+		req.URL.Path = newPath
+	}
+
 	pattern := method + " " + path
 	r.mux.HandleFunc(pattern, func(w http.ResponseWriter, req *http.Request) {
 		r.logger.Info("gateway request",
@@ -68,11 +84,15 @@ func (r *GatewayRouter) RegisterRoutes() {
 		"admin":        "admin",
 		"analytics":    "analytics",
 		"matching":     "matching",
+		"geo":          "geo",
 	}
 
 	for engine, backend := range engines {
-		r.RegisterRoute(engine, "GET", "/api/v1/"+engine+"/", backend)
-		r.RegisterRoute(engine, "POST", "/api/v1/"+engine+"/", backend)
+		// Wildcard pattern para capturar sub-rutas (Go 1.22+)
+		r.RegisterRoute(engine, "GET", "/api/v1/"+engine+"/{path...}", backend)
+		r.RegisterRoute(engine, "POST", "/api/v1/"+engine+"/{path...}", backend)
+		r.RegisterRoute(engine, "PUT", "/api/v1/"+engine+"/{path...}", backend)
+		r.RegisterRoute(engine, "DELETE", "/api/v1/"+engine+"/{path...}", backend)
 		r.RegisterRoute(engine, "GET", "/api/v1/"+engine+"/health", backend)
 	}
 

@@ -1,94 +1,115 @@
 "use client";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef } from "react";
 
-declare global { interface Window { L: any; } }
-
-const API_URL = typeof window !== "undefined"
-  ? `${window.location.protocol}//${window.location.host}/api/v1`
-  : "http://64.176.219.221/api/v1";
+declare global { interface Window { google: any; } }
 
 interface MapViewProps {
-  onCenterChange?: (coords: { lat: number; lng: number; address: string }) => void;
+  onCenterChange?: (c: { lat: number; lng: number }) => void;
+  onMapSelect?: (c: { lat: number; lng: number }) => void;
   onMapReady?: () => void;
-  showPin?: boolean;
   interactive?: boolean;
 }
 
-export function MapView({ onCenterChange, onMapReady, showPin = true, interactive = true }: MapViewProps) {
+const MAP_STYLE: any[] = [
+  { elementType: "geometry", stylers: [{ color: "#1c1c1e" }] },
+  { elementType: "labels.text.fill", stylers: [{ color: "#a8a8ae" }] },
+  { elementType: "labels.text.stroke", stylers: [{ color: "#1c1c1e" }] },
+  { featureType: "administrative.land_parcel", elementType: "labels.text.fill", stylers: [{ color: "#828288" }] },
+  { featureType: "landscape.man_made", elementType: "geometry", stylers: [{ color: "#242426" }] },
+  { featureType: "landscape.natural", elementType: "geometry", stylers: [{ color: "#202022" }] },
+  { featureType: "poi", elementType: "geometry", stylers: [{ color: "#2a2a30" }] },
+  { featureType: "poi", elementType: "labels.text.fill", stylers: [{ color: "#c0c0c6" }] },
+  { featureType: "poi", elementType: "labels.icon", stylers: [{ saturation: 40, lightness: -20, gamma: 0.9 }] },
+  { featureType: "poi.business", elementType: "labels.text.fill", stylers: [{ color: "#f4a460" }] },
+  { featureType: "poi.medical", elementType: "geometry", stylers: [{ color: "#3d2828" }] },
+  { featureType: "poi.medical", elementType: "labels.text.fill", stylers: [{ color: "#f07070" }] },
+  { featureType: "poi.park", elementType: "geometry", stylers: [{ color: "#1e3024" }] },
+  { featureType: "poi.park", elementType: "labels.text.fill", stylers: [{ color: "#80c080" }] },
+  { featureType: "poi.sports_complex", elementType: "geometry", stylers: [{ color: "#2a3a30" }] },
+  { featureType: "poi.sports_complex", elementType: "labels.text.fill", stylers: [{ color: "#70c090" }] },
+  { featureType: "poi.attraction", elementType: "labels.text.fill", stylers: [{ color: "#c0a0e0" }] },
+  { featureType: "poi.school", elementType: "labels.text.fill", stylers: [{ color: "#70a0d0" }] },
+  { featureType: "road", elementType: "geometry", stylers: [{ color: "#3a3a3e" }] },
+  { featureType: "road", elementType: "labels.text.fill", stylers: [{ color: "#bcbcc2" }] },
+  { featureType: "road.arterial", elementType: "geometry", stylers: [{ color: "#46464a" }] },
+  { featureType: "road.highway", elementType: "geometry", stylers: [{ color: "#4e4638" }] },
+  { featureType: "road.highway", elementType: "labels.text.fill", stylers: [{ color: "#e0d4b0" }] },
+  { featureType: "road.local", elementType: "labels.text.fill", stylers: [{ color: "#a0a0a6" }] },
+  { featureType: "transit.line", elementType: "geometry", stylers: [{ color: "#303034" }] },
+  { featureType: "transit.station", elementType: "geometry", stylers: [{ color: "#363638" }] },
+  { featureType: "transit", elementType: "labels.text.fill", stylers: [{ color: "#a0a0a8" }] },
+  { featureType: "transit.station", elementType: "labels.text.fill", stylers: [{ color: "#d0c060" }] },
+  { featureType: "water", elementType: "geometry", stylers: [{ color: "#141c26" }] },
+  { featureType: "water", elementType: "labels.text.fill", stylers: [{ color: "#607888" }] },
+];
+
+const DEFAULT_LNG = -79.8893;
+const DEFAULT_LAT = -2.1894;
+
+export function MapView({ onCenterChange, onMapSelect, onMapReady, interactive = true }: MapViewProps) {
   const mapRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const initialized = useRef(false);
-  const [mapReady, setMapReady] = useState(false);
-  const [centerAddr, setCenterAddr] = useState("Detectando ubicación...");
-
-  const reverseGeocode = useCallback(async (lat: number, lng: number) => {
-    try {
-      const res = await fetch(`${API_URL}/geo/reverse?lat=${lat}&lng=${lng}`);
-      if (res.ok) {
-        const data = await res.json();
-        const addr = data?.FormattedAddress || data?.formatted_address || `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-        setCenterAddr(addr);
-        onCenterChange?.({ lat, lng, address: addr });
-      }
-    } catch {
-      setCenterAddr(`${lat.toFixed(4)}, ${lng.toFixed(4)}`);
-      onCenterChange?.({ lat, lng, address: `${lat.toFixed(4)}, ${lng.toFixed(4)}` });
-    }
-  }, [onCenterChange]);
+  const onCenterChangeRef = useRef(onCenterChange);
+  const onMapSelectRef = useRef(onMapSelect);
+  const onMapReadyRef = useRef(onMapReady);
+  const listenersRef = useRef<any[]>([]);
+  onCenterChangeRef.current = onCenterChange;
+  onMapSelectRef.current = onMapSelect;
+  onMapReadyRef.current = onMapReady;
 
   useEffect(() => {
-    if (typeof window === "undefined" || !window.L || initialized.current) return;
-    const L = window.L;
-    const map = L.map(containerRef.current!, { center: [-2.1894, -79.8893], zoom: 15, zoomControl: false, attributionControl: false });
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 20 }).addTo(map);
-    map.on("moveend", () => { const c = map.getCenter(); reverseGeocode(c.lat, c.lng); });
-    mapRef.current = map;
-    initialized.current = true;
-    setMapReady(true);
-    onMapReady?.();
-    map.locate({ setView: true, maxZoom: 16 });
-    map.on("locationfound", (e: any) => { map.setView([e.latlng.lat, e.latlng.lng], 16); reverseGeocode(e.latlng.lat, e.latlng.lng); });
-    map.on("locationerror", () => { reverseGeocode(-2.1894, -79.8893); });
-    return () => { map.remove(); initialized.current = false; };
+    if (typeof window === "undefined" || initialized.current) return;
+
+    const cleanListeners = () => {
+      listenersRef.current.forEach(l => { try { l.remove(); } catch {} });
+      listenersRef.current = [];
+    };
+
+    const tryInit = () => {
+      if (!window.google?.maps) return false;
+      initialized.current = true;
+
+      const map = new window.google.maps.Map(containerRef.current!, {
+        center: { lat: DEFAULT_LAT, lng: DEFAULT_LNG },
+        zoom: 15, disableDefaultUI: true, zoomControl: false, styles: MAP_STYLE,
+        gestureHandling: "greedy", mapTypeId: "roadmap", mapTypeControl: false,
+        streetViewControl: false, fullscreenControl: false, rotateControl: false,
+      });
+
+      mapRef.current = map;
+      (window as any).__cymap = map;
+      onMapReadyRef.current?.();
+
+      listenersRef.current = [
+        map.addListener("center_changed", () => {
+          const c = map.getCenter();
+          onCenterChangeRef.current?.({ lat: c.lat(), lng: c.lng() });
+        }),
+        map.addListener("click", () => {
+          const c = map.getCenter();
+          onMapSelectRef.current?.({ lat: c.lat(), lng: c.lng() });
+        }),
+      ];
+
+      return true;
+    };
+
+    if (tryInit()) return;
+    let attempts = 0;
+    const interval = setInterval(() => {
+      attempts++;
+      if (tryInit() || attempts >= 15) clearInterval(interval);
+    }, 200);
+
+    return () => { clearInterval(interval); cleanListeners(); initialized.current = false; };
   }, []);
 
-  // Toggle map interactivity based on prop
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
-    if (interactive) {
-      if (map.dragging) map.dragging.enable();
-      if (map.scrollWheelZoom) map.scrollWheelZoom.enable();
-      if (map.touchZoom) map.touchZoom.enable();
-      if (map.doubleClickZoom) map.doubleClickZoom.enable();
-    } else {
-      if (map.dragging) map.dragging.disable();
-      if (map.scrollWheelZoom) map.scrollWheelZoom.disable();
-      if (map.touchZoom) map.touchZoom.disable();
-      if (map.doubleClickZoom) map.doubleClickZoom.disable();
-    }
+    map.setOptions({ gestureHandling: interactive ? "greedy" : "none" });
   }, [interactive]);
 
-  return (
-    <>
-      <div ref={containerRef} style={{ width: "100%", height: "100%" }} />
-      {mapReady && showPin && (
-        <>
-          <div style={{ position: "absolute", top: "50%", left: "50%", zIndex: 10, transform: "translate(-50%, -100%)", pointerEvents: "none", display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <div style={{ width: 60, height: 60, borderRadius: "50%", background: "rgba(0,108,73,0.15)", position: "absolute", top: 0, left: "50%", transform: "translate(-50%, -50%)", animation: "pulse 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite" }} />
-            <svg width="32" height="42" viewBox="0 0 32 42" fill="none" style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.3))" }}>
-              <path d="M16 0C7.16 0 0 7.16 0 16c0 12 16 26 16 26s16-14 16-26C32 7.16 24.84 0 16 0z" fill="#006c49" />
-              <circle cx="16" cy="15" r="8" fill="white" />
-            </svg>
-          </div>
-          <div style={{ position: "absolute", top: "calc(50% - 56px)", left: "50%", transform: "translateX(-50%)", zIndex: 11, background: "rgba(255,255,255,0.95)", backdropFilter: "blur(12px)", padding: "6px 16px", borderRadius: 12, boxShadow: "0 2px 12px rgba(0,0,0,0.12)", fontSize: 13, fontWeight: 500, fontFamily: "Inter", color: "#191c1e", whiteSpace: "nowrap", maxWidth: 260, overflow: "hidden", textOverflow: "ellipsis", border: "1px solid rgba(0,0,0,0.06)", pointerEvents: "none" }}>
-            📍 {centerAddr}
-          </div>
-        </>
-      )}
-      {mapReady && (
-        <button style={{ position: "fixed", right: 16, bottom: "calc(50dvh - 50px)", zIndex: 9, width: 44, height: 44, borderRadius: 14, background: "var(--uk-surface-container-lowest)", border: "none", boxShadow: "0 2px 8px rgba(0,0,0,0.08)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }} onClick={() => { mapRef.current?.locate({ setView: true, maxZoom: 16 }); }} aria-label="Mi ubicación">📍</button>
-      )}
-    </>
-  );
+  return <div ref={containerRef} style={{ width: "100%", height: "100%", background: "#1c1c1e" }} />;
 }

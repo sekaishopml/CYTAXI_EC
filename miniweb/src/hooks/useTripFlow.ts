@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import { TripState, Place, FareBreakdown, TrackingUpdate } from "@/types";
 import { searchPlaces, calculateRoute, estimateFare, requestTrip } from "@/services/api";
 import { subscribeToTrip } from "@/services/tracking";
@@ -24,19 +24,36 @@ export function useTripFlow() {
   const [tracking, setTracking] = useState<TrackingUpdate | null>(null);
   const [eta, setEta] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [paymentMethod] = useState<"cash" | "card">("cash");
+  const [paymentMethod, setPaymentMethod] = useState<"cash" | "card">("cash");
   const sheetRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleCenterChange = useCallback((data: { lat: number; lng: number; address: string }) => {
     setPickupAddress(data.address);
     setPickupCoords({ lat: data.lat, lng: data.lng });
   }, []);
 
+  // Setea el destino al arrastrar el mapa en estado input
+  const handleMapDestChange = useCallback((data: { lat: number; lng: number; address: string }) => {
+    const place: Place = {
+      name: data.address.split(",")[0] || "Destino seleccionado",
+      address: data.address,
+      lat: data.lat,
+      lng: data.lng,
+    };
+    setDest(place);
+    setDestQuery(data.address);
+    setDestSuggestions([]);
+  }, []);
+
   const doSearchDest = useCallback(async (q: string) => {
     if (q.length < 3) { setDestSuggestions([]); return; }
-    const results = await searchPlaces(q);
-    setDestSuggestions(results);
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+    searchTimer.current = setTimeout(async () => {
+      const results = await searchPlaces(q);
+      setDestSuggestions(results);
+    }, 400);
   }, []);
 
   const selectDest = useCallback((place: Place) => {
@@ -45,8 +62,23 @@ export function useTripFlow() {
     setDestSuggestions([]);
   }, []);
 
+  const handleClearDest = useCallback(() => {
+    setDest(null);
+    setDestQuery("");
+    setDestSuggestions([]);
+    setRoute(null);
+    setFare(null);
+  }, []);
+
   const handleConfirmPickup = useCallback(() => {
     setState("input");
+  }, []);
+
+  const handleBackPickup = useCallback(() => {
+    setDest(null);
+    setDestQuery("");
+    setDestSuggestions([]);
+    setState("pickup_select");
   }, []);
 
   const handleConfirmDest = useCallback(async () => {
@@ -77,7 +109,7 @@ export function useTripFlow() {
         setState("driver_found");
         setLoading(false);
       }, 3000);
-    } catch (e) { setLoading(false); }
+    } catch (e) { setLoading(false); setState("input"); }
   }, [pickupCoords, pickupAddress, dest, fare]);
 
   const startTracking = useCallback(() => {
@@ -91,21 +123,75 @@ export function useTripFlow() {
     });
   }, [tripId, driver]);
 
+  // Auto-start tracking when driver is assigned
+  useEffect(() => {
+    if (tripId && driver && state === "driver_found") {
+      startTracking();
+    }
+  }, [tripId, driver, state, startTracking]);
+
   const reset = useCallback(() => {
     setState("pickup_select");
     setDest(null); setDestQuery(""); setRoute(null); setFare(null);
     setDriver(null); setTripId(""); setTracking(null); setEta(0);
+    localStorage.removeItem("cytaxi_session");
   }, []);
 
+  const handleCancelTrip = useCallback(() => {
+    setState("pickup_select");
+    setDriver(null); setTripId(""); setTracking(null); setEta(0);
+    setDest(null); setDestQuery(""); setRoute(null); setFare(null);
+    localStorage.removeItem("cytaxi_session");
+  }, []);
+
+  const handleRejectDriver = useCallback(() => {
+    setDriver(null);
+    setTripId("");
+    setState("input");
+  }, []);
+
+  // Session persistence — con versión para migraciones futuras
+  const SESSION_VER = 2;
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("cytaxi_session");
+      if (saved) {
+        const s = JSON.parse(saved);
+        if (s.v !== SESSION_VER) { localStorage.removeItem("cytaxi_session"); return; }
+        if (s.state === "pickup_select" && s.dest) { localStorage.removeItem("cytaxi_session"); return; }
+        if (s.state === "confirm" && !s.route) { localStorage.removeItem("cytaxi_session"); return; }
+        if (s.state && ["pickup_select", "input", "confirm"].includes(s.state)) {
+          setState(s.state);
+          if (s.state === "input" && s.dest) setDest(s.dest);
+          if (s.state === "input" && s.destQuery) setDestQuery(s.destQuery);
+          if (s.pickupAddress) setPickupAddress(s.pickupAddress);
+          if (s.pickupCoords) setPickupCoords(s.pickupCoords);
+          if (s.route) setRoute(s.route);
+          if (s.fare) setFare(s.fare);
+        } else { localStorage.removeItem("cytaxi_session"); }
+      }
+    } catch (e) { console.warn("Session restore failed", e); localStorage.removeItem("cytaxi_session"); }
+  }, []);
+
+  useEffect(() => {
+    if (!state || state === "searching" || state === "driver_found" || state === "in_progress") return;
+    try {
+      localStorage.setItem("cytaxi_session", JSON.stringify({
+        v: SESSION_VER, state, dest, destQuery, pickupAddress, pickupCoords, route, fare,
+      }));
+    } catch (e) { console.warn("Session save failed", e); }
+  }, [state, dest, destQuery, pickupAddress, pickupCoords, route, fare]);
+
   const pickupStepProps = { onConfirm: handleConfirmPickup, address: pickupAddress, loading };
-  const destStepProps = { destQuery, setDestQuery: setDestQuery, destSuggestions, dest, onSearch: doSearchDest, onSelect: selectDest, onConfirm: handleConfirmDest, loading, pickupAddress };
-  const confirmProps = { pickup: { name: pickupAddress, address: pickupAddress, lat: pickupCoords?.lat || 0, lng: pickupCoords?.lng || 0 }, dest: dest!, route, fare, onConfirm: handleRequestTrip, onBack: () => setState("input"), loading };
-  const trackingProps = { state, driver, eta, route, tracking, onStart: startTracking, paymentMethod, pickup: null, dest };
+  const destStepProps = { destQuery, setDestQuery: setDestQuery, destSuggestions, dest, onSearch: doSearchDest, onSelect: selectDest, onConfirm: handleConfirmDest, loading, pickupAddress, onBack: handleBackPickup, onClearDest: handleClearDest };
+  const confirmProps = { pickup: { name: pickupAddress.split(",")[0] || pickupAddress, address: pickupAddress, lat: pickupCoords?.lat || 0, lng: pickupCoords?.lng || 0 }, dest: dest!, route, fare, onConfirm: handleRequestTrip, onBack: () => setState("input"), loading, paymentMethod, onPaymentChange: setPaymentMethod };
+  const trackingProps = { state, driver, eta, route, tracking, onStart: startTracking, paymentMethod, pickup: null, dest, onCancel: handleCancelTrip, onRejectDriver: handleRejectDriver };
   const completedProps = { fare, driver, pickup: null, dest, onNewTrip: reset, paymentMethod };
 
   return {
-    state, pickupAddress, pickupCoords, dest, route, fare, driver, eta, tracking, loading, tripId,
+    state, pickupAddress, pickupCoords, dest, destQuery, route, fare, driver, eta, tracking, loading, tripId,
     sheetRef, contentRef, pickupStepProps, destStepProps, confirmProps, trackingProps, completedProps,
-    handleCenterChange, setState,
+    handleCenterChange, handleMapDestChange, setState,
+    setDest, setDestQuery, setRoute, setFare,
   };
 }

@@ -12,6 +12,8 @@ import (
 	"github.com/sekaishopml/cytaxi/backend/engines/matching/internal/matching/api/handler"
 	"github.com/sekaishopml/cytaxi/backend/engines/matching/internal/matching/api/router"
 	"github.com/sekaishopml/cytaxi/backend/engines/matching/internal/matching/config"
+	"github.com/sekaishopml/cytaxi/backend/engines/matching/internal/matching/application/service"
+	"github.com/sekaishopml/cytaxi/backend/engines/matching/internal/matching/infrastructure/repository"
 )
 
 func main() {
@@ -29,8 +31,15 @@ func main() {
 	}))
 	slog.SetDefault(logger)
 
+	// Repositorios in-memory
+	matchRepo := repository.NewInMemoryMatchingRepository()
+	candidateRepo := repository.NewInMemoryCandidateRepository()
+
+	// Servicio
+	matchingService := service.NewMatchingService(matchRepo, candidateRepo, logger)
+
 	mux := http.NewServeMux()
-	h := handler.New(nil, logger)
+	h := handler.New(matchingService, logger)
 	r := router.New(mux, h)
 
 	logger.Info("matching engine starting", "port", cfg.Port)

@@ -5,10 +5,11 @@ import (
 
 	"github.com/sekaishopml/cytaxi/backend/engines/trip/internal/trip/application/command"
 	"github.com/sekaishopml/cytaxi/backend/engines/trip/internal/trip/application/query"
+	"github.com/sekaishopml/cytaxi/backend/engines/trip/internal/trip/domain/trip"
 )
 
 type TripService interface {
-	Create(ctx context.Context, cmd command.CreateTrip) error
+	Create(ctx context.Context, cmd command.CreateTrip) (*trip.Trip, error)
 	AssignDriver(ctx context.Context, cmd command.AssignDriver) error
 	UnassignDriver(ctx context.Context, cmd command.UnassignDriver) error
 	Accept(ctx context.Context, cmd command.AcceptTrip) error

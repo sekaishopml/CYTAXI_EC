@@ -47,7 +47,11 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-  .leaflet-container { width: 100%; height: 100%; z-index: 1; }
+  .gm-style-1c { background: #1c1c1e !important; }
+  .gmnoprint, .gm-cc, .gm-style-cc, .gm-style .gm-style-cc { display: none !important; opacity: 0 !important; pointer-events: none !important; }
+  [aria-label="Keyboard shortcuts"], [aria-label="Map data"], .gm-style .gmnoprint { display: none !important; }
+  .gm-style a[href*="google"], a[href*="terms.google"], a[href*="policies.google"], .gm-style-cc { display: none !important; }
+  .gm-style button:not([aria-label="Mi ubicación"]) { display: none !important; }
 }
 
 /* Urban Kinetic Components */
@@ -168,7 +172,7 @@
 
   /* Map location button (floating) */
   .locate-btn {
-    position: fixed; right: 16px; bottom: calc(56dvh + 20px); z-index: 9;
+    position: absolute; right: 16px; bottom: 20px; z-index: 690;
     width: 44px; height: 44px; border-radius: 14px;
     background: var(--uk-surface-container-lowest);
     border: none; box-shadow: var(--uk-float-shadow);
@@ -198,6 +202,19 @@
 
   /* Loading spinner */
   @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes pulse { 0% { transform: translateX(-50%) scale(1); opacity: 0.6; } 100% { transform: translateX(-50%) scale(2.2); opacity: 0; } }
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes pinEntrance {
+    0% { transform: translate(-50%, -100%) scale(0); opacity: 0; }
+    60% { transform: translate(-50%, -100%) scale(1.06); opacity: 1; }
+    80% { transform: translate(-50%, -100%) scale(0.96); }
+    100% { transform: translate(-50%, -100%) scale(1); opacity: 1; }
+  }
+  @keyframes labelFadeIn { from { opacity: 0; transform: translateX(-50%) translateY(-8px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+  @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+  @keyframes fadeScale { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+  .animate-fade-scale { animation: fadeScale 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  .animate-fade-scale-delayed { animation: fadeScale 0.4s 0.08s cubic-bezier(0.16, 1, 0.3, 1) both; }
   .spinner {
     width: 48px; height: 48px; border-radius: 50%;
     border: 3px solid var(--uk-outline);

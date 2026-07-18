@@ -10,6 +10,7 @@ import (
 	"github.com/sekaishopml/cytaxi/backend/engines/pricing/internal/pricing/domain/fare"
 	"github.com/sekaishopml/cytaxi/backend/engines/pricing/internal/pricing/domain/promotion"
 	"github.com/sekaishopml/cytaxi/backend/engines/pricing/internal/pricing/domain/coupon"
+	"github.com/sekaishopml/cytaxi/backend/engines/pricing/internal/pricing/domain/valueobject"
 	"github.com/sekaishopml/cytaxi/backend/engines/pricing/internal/pricing/infrastructure/repository"
 )
 

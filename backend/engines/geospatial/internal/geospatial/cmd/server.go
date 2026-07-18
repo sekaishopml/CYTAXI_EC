@@ -8,18 +8,18 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/sekaishopml/cytaxi/backend/engines/geospatial/internal/geospatial/domain/service"
 	"github.com/sekaishopml/cytaxi/backend/engines/geospatial/internal/geospatial/domain/types"
 	"github.com/sekaishopml/cytaxi/backend/engines/geospatial/internal/geospatial/infrastructure/cache"
-	"github.com/sekaishopml/cytaxi/backend/engines/geospatial/internal/geospatial/infrastructure/real"
 )
 
 type GeoServer struct {
-	provider types.GeospatialProvider
+	provider service.GeospatialProvider
 	cache    *cache.GeospatialCache
 	logger   *slog.Logger
 }
 
-func NewGeoServer(provider types.GeospatialProvider, logger *slog.Logger) *GeoServer {
+func NewGeoServer(provider service.GeospatialProvider, logger *slog.Logger) *GeoServer {
 	return &GeoServer{
 		provider: provider,
 		cache:    cache.NewGeospatialCache(5 * time.Minute),

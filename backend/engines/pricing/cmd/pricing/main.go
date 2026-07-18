@@ -12,6 +12,8 @@ import (
 	"github.com/sekaishopml/cytaxi/backend/engines/pricing/internal/pricing/api/handler"
 	"github.com/sekaishopml/cytaxi/backend/engines/pricing/internal/pricing/api/router"
 	"github.com/sekaishopml/cytaxi/backend/engines/pricing/internal/pricing/config"
+	"github.com/sekaishopml/cytaxi/backend/engines/pricing/internal/pricing/application/service"
+	"github.com/sekaishopml/cytaxi/backend/engines/pricing/internal/pricing/infrastructure/repository"
 )
 
 func main() {
@@ -29,8 +31,16 @@ func main() {
 	}))
 	slog.SetDefault(logger)
 
+	// Repositorios in-memory
+	fareRepo := repository.NewInMemoryFareRepository()
+	promoRepo := repository.NewInMemoryPromotionRepository()
+	couponRepo := repository.NewInMemoryCouponRepository()
+
+	// Servicio
+	pricingService := service.NewPricingService(fareRepo, promoRepo, couponRepo, logger)
+
 	mux := http.NewServeMux()
-	h := handler.New(nil, logger)
+	h := handler.New(pricingService, logger)
 	r := router.New(mux, h)
 
 	logger.Info("pricing engine starting", "port", cfg.Port)

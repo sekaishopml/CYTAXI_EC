@@ -190,3 +190,8 @@ func (t *Trip) SetEstimate(est TripEstimate) {
 	t.Estimate = est
 	t.UpdatedAt = time.Now()
 }
+
+// IsActive returns true if trip is in an active state
+func (t *Trip) IsActive() bool {
+	return t.Status != valueobject.StatusCompleted && t.Status != valueobject.StatusCancelled
+}

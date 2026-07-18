@@ -10,7 +10,6 @@ import (
 	"syscall"
 
 	"github.com/sekaishopml/cytaxi/backend/gateway/internal/config"
-	"github.com/sekaishopml/cytaxi/backend/gateway/internal/handler"
 	"github.com/sekaishopml/cytaxi/backend/gateway/internal/middleware"
 	"github.com/sekaishopml/cytaxi/backend/gateway/internal/router"
 )
@@ -31,10 +30,10 @@ func main() {
 	slog.SetDefault(logger)
 
 	mwChain := middleware.NewChain(logger)
-	mwChain.Use(middleware.Recovery)
+	mwChain.Use(middleware.Recovery(logger))
 	mwChain.Use(middleware.Correlation)
 	mwChain.Use(middleware.CORS)
-	mwChain.Use(middleware.RequestLogger)
+	mwChain.Use(middleware.RequestLogger(logger))
 	mwChain.Use(middleware.RateLimiter(cfg.RateLimitRPS))
 	mwChain.Use(middleware.AuthJWT(cfg.AuthSecret))
 

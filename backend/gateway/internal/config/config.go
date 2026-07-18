@@ -40,6 +40,7 @@ func Load() (*Config, error) {
 			"admin":        env("BACKEND_ADMIN", "http://localhost:8094"),
 			"analytics":    env("BACKEND_ANALYTICS", "http://localhost:8093"),
 			"matching":     env("BACKEND_MATCHING", "http://localhost:8089"),
+			"geo":          env("BACKEND_GEOSPATIAL", "http://localhost:8082"),
 		},
 	}, nil
 }
