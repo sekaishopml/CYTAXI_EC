@@ -1,7 +1,7 @@
 "use client";
 import { TravelHero } from "@/components/hero/TravelHero";
 import { MapPreview } from "@/components/map/MapPreview";
-import { RecentTrips } from "@/components/RecentTrips";
+import { RecentTrips } from "@/features/trip/ui/RecentTrips";
 
 interface HomeStateProps {
   onStartTrip: () => void;

@@ -1,6 +1,6 @@
 export { useJourneyEngine } from "@/hooks/useJourneyEngine";
 export { BottomSheet } from "@/components/bottom-sheet/BottomSheet";
-export { TripTimeline } from "@/components/TripTimeline";
+export { TripTimeline } from "@/features/trip/ui/TripTimeline";
 export { MapController } from "@/components/map/MapController";
 export { PickUpStep } from "@/components/states/PickUpStep";
 export { FormState } from "@/components/states/FormState";

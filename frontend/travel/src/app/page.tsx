@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import { AnimatePresence, motion } from "framer-motion";
 import { useJourneyEngine } from "@/hooks/useJourneyEngine";
 import { BottomSheet } from "@/components/bottom-sheet/BottomSheet";
-import { TripTimeline } from "@/components/TripTimeline";
+import { TripTimeline } from "@/features/trip/ui/TripTimeline";
 import { PickUpStep } from "@/components/states/PickUpStep";
 import { FormState } from "@/components/states/FormState";
 import { ConfirmState } from "@/components/states/ConfirmState";
@@ -17,7 +17,7 @@ import { RatingState } from "@/components/states/RatingState";
 import { CompletedState } from "@/components/states/CompletedState";
 import { HomeState } from "@/components/states/HomeState";
 import { getStateConfig, RideState } from "@cytaxi/ride-machine";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { colors, shadows, zIndex } from "@cytaxi/design-tokens";
 
 const API_URL = typeof window !== "undefined" ? `${window.location.protocol}//${window.location.host}/api/v1` : "";
