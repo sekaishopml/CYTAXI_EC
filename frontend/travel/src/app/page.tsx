@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { AnimatePresence, motion } from "framer-motion";
 import { useJourneyEngine } from "@/hooks/useJourneyEngine";
-import { BottomSheet } from "@/components/BottomSheet";
+import { BottomSheet } from "@/components/bottom-sheet/BottomSheet";
 import { TripTimeline } from "@/components/TripTimeline";
 import { PickUpStep } from "@/components/states/PickUpStep";
 import { FormState } from "@/components/states/FormState";
@@ -15,14 +15,14 @@ import { DestinationState } from "@/components/states/DestinationState";
 import { PaymentState } from "@/components/states/PaymentState";
 import { RatingState } from "@/components/states/RatingState";
 import { CompletedState } from "@/components/states/CompletedState";
-import { TravelHome } from "@/components/states/TravelHome";
+import { HomeState } from "@/components/states/HomeState";
 import { getStateConfig, RideState } from "@cytaxi/ride-machine";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { colors, spacing, radius, shadows, zIndex } from "@cytaxi/design-tokens";
+import { colors, shadows, zIndex } from "@cytaxi/design-tokens";
 
 const API_URL = typeof window !== "undefined" ? `${window.location.protocol}//${window.location.host}/api/v1` : "";
 
-const MapController = dynamic(() => import("@/components/MapController").then(m => ({ default: m.MapController })), { ssr: false });
+const MapController = dynamic(() => import("@/components/map/MapController").then(m => ({ default: m.MapController })), { ssr: false });
 
 const DEFAULT_LNG = -79.8893;
 const DEFAULT_LAT = -2.1894;
@@ -332,7 +332,7 @@ export default function HomePage() {
       position: "fixed", inset: 0, touchAction: "none",
     }}>
       {flow.state === "travel_home" ? (
-        <TravelHome onStartTrip={() => flow.send("START_TRIP")} />
+        <HomeState onStartTrip={() => flow.send("START_TRIP")} />
       ) : (<>
         {showMap && (
           <div style={{
