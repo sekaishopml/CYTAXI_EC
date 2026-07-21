@@ -47,7 +47,7 @@ Workflows en `.github/workflows/`:
 
 ```bash
 # Frontend
-cd travel && npm run build && systemctl restart cytaxi-travel
+cd frontend/travel && npm run build && systemctl restart cytaxi-travel
 
 # Backend
 systemctl restart cytaxi-geospatial

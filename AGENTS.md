@@ -7,7 +7,9 @@
 - **Design**: Cobalt theme (Hallmark) — `#3b82f6` accent, Space Grotesk + Inter + JetBrains Mono
 
 ## Where to find things
-- `travel/` — Next.js frontend app
+- `frontend/travel/` — Next.js client app
+- `frontend/driver-web/` — Next.js driver portal
+- `frontend/dashboard/` — Next.js admin dashboard
 - `backend/engines/geospatial/` — Go geospatial engine (routing, reverse geocode)
 - `backend/gateway/` — API gateway
 - `packages/` — shared packages (ride-machine, map-engine, design-tokens)
@@ -15,7 +17,7 @@
 - `deploy/`, `infra/` — deployment and infrastructure
 
 ## Key conventions
-- Run `npm run build` from `travel/` before deploying
+- Run `npm run build` from `frontend/travel/` before deploying
 - Deploy: `systemctl restart cytaxi-travel` (frontend), `systemctl restart cytaxi-geospatial` (backend)
 - State machine lives in `packages/ride-machine/`; transitions in `useJourneyEngine.ts`
 - All UI text in Spanish

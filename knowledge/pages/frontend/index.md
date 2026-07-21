@@ -23,7 +23,7 @@
 ## Estructura
 
 ```
-travel/
+frontend/travel/
   src/
     app/              → App Router pages (Next.js 14)
     components/       → UI components

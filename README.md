@@ -69,46 +69,28 @@ CYTAXI_EC/
 │   ├── validation/                  # Validation
 │   └── version/                     # Version info
 │
-├── travel/                          # Travel frontend — Next.js 14 (App Router)
-│   ├── src/
-│   │   ├── app/                     # App Router pages
-│   │   │   ├── layout.tsx
-│   │   │   ├── page.tsx
-│   │   │   ├── globals.css
-│   │   │   ├── history/
-│   │   │   └── profile/
-│   │   ├── components/
-│   │   │   ├── states/              # Trip state UI (Arriving, Confirm, etc.)
-│   │   │   ├── MapPreview.tsx
-│   │   │   ├── MapController.tsx
-│   │   │   ├── BottomSheet.tsx
-│   │   │   ├── ModuleCard.tsx
-│   │   │   ├── RecentTrips.tsx
-│   │   │   └── TripTimeline.tsx
-│   │   ├── services/                # API, tracking, offline-queue, telemetry
-│   │   ├── hooks/useJourneyEngine.ts
-│   │   ├── entities/
-│   │   ├── features/
-│   │   ├── shared/
-│   │   ├── styles/design.ts
-│   │   └── types.ts
-│   ├── public/
-│   ├── tailwind.config.js
-│   └── vitest.config.ts
-│
-├── dashboard/                       # Admin dashboard — Next.js (Pages Router)
-│   └── src/
-│       ├── components/Layout.tsx
-│       ├── pages/                   # billing, system, tenants, index
-│       └── styles/
-│
-├── driver-web/                      # Driver web app — Next.js 14 (App Router)
-│   └── src/
-│       ├── pages/                   # dashboard, trips, earnings, profile, etc.
-│       ├── components/
-│       ├── contexts/                # auth, availability, trip
-│       ├── hooks/
-│       └── services/
+├── frontend/                        # Frontend apps
+│   ├── travel/                      #   Travel — Next.js 14 (App Router)
+│   │   ├── src/
+│   │   │   ├── app/                 #   App Router pages
+│   │   │   ├── components/          #   States, MapPreview, BottomSheet, etc.
+│   │   │   ├── services/            #   API, tracking, offline-queue
+│   │   │   ├── hooks/useJourneyEngine.ts
+│   │   │   └── ...
+│   │   ├── tailwind.config.js
+│   │   └── vitest.config.ts
+│   ├── driver-web/                  #   Driver web app — Next.js 14 (App Router)
+│   │   └── src/
+│   │       ├── pages/               #   dashboard, trips, earnings, profile, etc.
+│   │       ├── components/
+│   │       ├── contexts/            #   auth, availability, trip
+│   │       ├── hooks/
+│   │       └── services/
+│   └── dashboard/                   #   Admin dashboard — Next.js (Pages Router)
+│       └── src/
+│           ├── components/Layout.tsx
+│           ├── pages/               #   billing, system, tenants, index
+│           └── styles/
 │
 ├── packages/                        # Shared TypeScript packages
 │   ├── api-client/                  #   API client SDK

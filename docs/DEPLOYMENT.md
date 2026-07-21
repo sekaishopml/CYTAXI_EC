@@ -54,7 +54,7 @@ systemctl status cytaxi-*
 journalctl -u cytaxi-trip -f
 
 # Rebuild + restart un servicio frontend
-cd /home/CYTAXI_EC/travel && npm run build && systemctl restart cytaxi-travel
+cd /home/CYTAXI_EC/frontend/travel && npm run build && systemctl restart cytaxi-travel
 
 # Rebuild + restart un engine Go
 cd /home/CYTAXI_EC/backend/engines/trip && \

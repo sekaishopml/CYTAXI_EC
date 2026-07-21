@@ -18,7 +18,7 @@ services:
 
   travel:
     build:
-      context: ./travel
+      context: ./frontend/travel
       dockerfile: Dockerfile
     environment: { NEXT_PUBLIC_GATEWAY_URL: "http://64.176.219.221", PORT: "3000" }
     networks: [cytaxi_net]
@@ -26,7 +26,7 @@ services:
 
   driver-web:
     build:
-      context: ./driver-web
+      context: ./frontend/driver-web
       dockerfile: Dockerfile
     environment: { NEXT_PUBLIC_GATEWAY_URL: "http://64.176.219.221", PORT: "3001" }
     networks: [cytaxi_net]
@@ -34,7 +34,7 @@ services:
 
   dashboard:
     build:
-      context: ./dashboard
+      context: ./frontend/dashboard
       dockerfile: Dockerfile
     environment: { NEXT_PUBLIC_GATEWAY_URL: "http://64.176.219.221", PORT: "3002" }
     networks: [cytaxi_net]
