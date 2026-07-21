@@ -73,3 +73,10 @@ type ChangeDestination struct {
 	TripID      valueobject.TripID
 	Destination destination.Destination
 }
+
+type UpdateLocation struct {
+	TripID   valueobject.TripID
+	DriverID valueobject.DriverID
+	Lat      float64
+	Lng      float64
+}

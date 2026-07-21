@@ -1,0 +1,27 @@
+{
+  "name": "@cytaxi/ui",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./button": "./src/components/Button.tsx",
+    "./card": "./src/components/Card.tsx",
+    "./modal": "./src/components/Modal.tsx",
+    "./input": "./src/components/Input.tsx",
+    "./sheet": "./src/components/Sheet.tsx",
+    "./badge": "./src/components/Badge.tsx",
+    "./avatar": "./src/components/Avatar.tsx",
+    "./timeline": "./src/components/Timeline.tsx",
+    "./toast": "./src/components/Toast.tsx",
+    "./spinner": "./src/components/Spinner.tsx",
+    "./utils": "./src/utils/cn.ts"
+  },
+  "dependencies": {
+    "@cytaxi/design-tokens": "*",
+    "clsx": "^2.1.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0"
+  }
+}

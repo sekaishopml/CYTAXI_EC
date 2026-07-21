@@ -9,6 +9,8 @@ const links = [
   { href: "/trip/history", label: "History", icon: "◷" },
   { href: "/vehicle", label: "Vehicle", icon: "◆" },
   { href: "/documents", label: "Documents", icon: "◈" },
+  { href: "/earnings", label: "Earnings", icon: "$" },
+  { href: "/profile", label: "Profile", icon: "👤" },
   { href: "/notifications", label: "Notifications", icon: "◉" },
   { href: "/settings", label: "Settings", icon: "⚙" },
 ];

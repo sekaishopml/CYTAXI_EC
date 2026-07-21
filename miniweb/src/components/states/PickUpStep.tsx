@@ -1,7 +1,5 @@
 "use client";
-const G = "#006c49";
-const T1 = "#191c1e";
-const T2 = "#3c4a42";
+import { colors, radius } from "@cytaxi/design-tokens";
 
 interface PickUpStepProps {
   onConfirm: () => void;
@@ -11,44 +9,51 @@ interface PickUpStepProps {
 
 export function PickUpStep({ onConfirm, address, loading }: PickUpStepProps) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", padding: "16px 20px 14px", gap: 14 }}>
-      <div style={{ textAlign: "center" }}>
-        <p style={{ fontSize: 19, fontWeight: 700, color: T1, margin: 0, letterSpacing: "-0.02em" }}>
+    <div style={{ display: "flex", flexDirection: "column", padding: "14px 18px 12px", gap: 12 }}>
+      <div style={{ textAlign: "left" }}>
+        <p style={{ margin: 0, fontSize: 18, fontWeight: 600, fontFamily: "'Space Grotesk', sans-serif", color: colors.textPrimary, letterSpacing: "-0.02em" }}>
           ¿Dónde te recogemos?
         </p>
-        <p style={{ fontSize: 13, color: "#8a8a8a", margin: "4px 0 0", fontWeight: 400 }}>
+        <p style={{ fontSize: 12, color: colors.textMuted, margin: "4px 0 0", fontWeight: 400, fontFamily: "'Inter', sans-serif" }}>
           Arrastra el mapa para ajustar el punto exacto
         </p>
       </div>
 
       <div style={{
-        background: "rgba(255,255,255,0.8)", backdropFilter: "blur(20px)", borderRadius: 14,
-        boxShadow: "0 1px 3px rgba(0,0,0,0.04), 0 6px 20px rgba(0,0,0,0.04)",
-        border: "1px solid rgba(0,0,0,0.05)", padding: "14px 16px",
-        display: "flex", alignItems: "center", gap: 12,
+        background: colors.surface.paperLight,
+        borderRadius: radius.md, border: "1px solid rgba(0,0,0,0.06)",
+        padding: "12px 14px", display: "flex", alignItems: "center", gap: 10,
       }}>
         <div style={{
-          width: 12, height: 12, borderRadius: "50%", background: G,
-          flexShrink: 0, boxShadow: `0 0 0 4px ${G}12, 0 0 0 6px ${G}08`,
-        }} />
+          width: 24, height: 24, borderRadius: "50%", background: colors.cobalt,
+          flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
+          color: "#fff", fontSize: 11, fontWeight: 700, fontFamily: "'Inter', sans-serif",
+        }}>A</div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <p style={{ fontSize: 11, fontWeight: 600, color: "#9a9a9a", margin: 0, letterSpacing: "0.04em", textTransform: "uppercase" }}>
-            Punto de recogida
+          <p style={{ fontSize: 9, fontWeight: 500, color: colors.textMuted, margin: 0, letterSpacing: "0.06em", textTransform: "uppercase", fontFamily: "'JetBrains Mono', monospace" }}>
+            ORIGEN
           </p>
-          <p style={{ fontSize: 15, fontWeight: 500, color: T1, margin: "3px 0 0", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          <p style={{ fontSize: 14, fontWeight: 500, color: colors.textPrimary, margin: "2px 0 0", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const, fontFamily: "'Inter', sans-serif" }}>
             {address || "Ubicación actual"}
           </p>
         </div>
       </div>
 
-      <button onClick={onConfirm}
+      <button type="button" onClick={onConfirm} disabled={loading}
+        aria-label="Confirmar ubicación de recogida"
         style={{
-          width: "100%", height: 52, background: "#121212", color: "#fff", borderRadius: 14,
-          fontSize: 16, fontWeight: 600, fontFamily: "Inter", border: "none", cursor: "pointer",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.12)", transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
-          letterSpacing: "-0.01em",
+          width: "100%", height: 48, background: loading ? "#8e96a0" : colors.cobalt, color: "#fff",
+          borderRadius: radius.xs, fontSize: 15, fontWeight: 600, fontFamily: "'Inter', sans-serif",
+          border: "none", cursor: loading ? "not-allowed" : "pointer",
+          transition: "background 0.15s ease, opacity 0.15s ease",
+          opacity: loading ? 0.6 : 1,
         }}>
-        Confirmar ubicación
+        {loading ? (
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+            <span style={{ width: 16, height: 16, border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+            Detectando...
+          </span>
+        ) : "Confirmar ubicación"}
       </button>
     </div>
   );

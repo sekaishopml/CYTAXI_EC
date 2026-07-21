@@ -90,8 +90,10 @@ func (s *GeoServer) HandleReverseGeocode(w http.ResponseWriter, r *http.Request)
 
 func (s *GeoServer) HandleRoute(w http.ResponseWriter, r *http.Request) {
 	var req struct {
-		OriginLat, OriginLng     float64 `json:"origin_lat,origin_lng"`
-		DestLat, DestLng         float64 `json:"dest_lat,dest_lng"`
+		OriginLat float64 `json:"origin_lat"`
+		OriginLng float64 `json:"origin_lng"`
+		DestLat   float64 `json:"dest_lat"`
+		DestLng   float64 `json:"dest_lng"`
 	}
 	json.NewDecoder(r.Body).Decode(&req)
 

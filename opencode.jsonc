@@ -1,0 +1,38 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": ["AGENTS.md", "knowledge/pages/_index.md"],
+  "references": {
+    "knowledge": {
+      "path": "knowledge",
+      "description": "Logseq knowledge graph — architecture, decisions, sprints, API docs"
+    },
+    "backend": {
+      "path": "backend",
+      "description": "Backend Go source — geospatial engine, gateway, providers"
+    },
+    "miniweb": {
+      "path": "miniweb",
+      "description": "Miniweb frontend — Next.js rides mini-app"
+    }
+  },
+  "mcp": {
+    "filesystem": {
+      "type": "local",
+      "command": ["npx", "-y", "@modelcontextprotocol/server-filesystem", "/home/CYTAXI_EC"],
+      "enabled": true
+    },
+    "git": {
+      "type": "local",
+      "command": ["npx", "-y", "mcp-git"],
+      "enabled": true,
+      "cwd": "/home/CYTAXI_EC"
+    }
+  },
+  "agent": {
+    "know": {
+      "description": "Knowledge curator — searches, reads, and writes the Logseq knowledge graph at knowledge/",
+      "mode": "subagent",
+      "prompt": "You are a knowledge curator for the CYTAXI project. You manage the Logseq-compatible knowledge graph at knowledge/. Use knowledge/ for architecture decisions, API docs, sprint retrospectives, and any persistent project knowledge. Prefer hierarchical page references (e.g., [[architecture/tracking]], [[decisions/2026-07-20-cobalt-theme]]). Write in Spanish."
+    }
+  }
+}

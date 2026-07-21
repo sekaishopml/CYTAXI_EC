@@ -12,7 +12,7 @@ const AuthContext = createContext<AuthCtx | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [driver, setDriver] = useState<Driver | null>(null);
-  const login = async (phone: string) => { setDriver({ id: "drv", name: "Driver", phone, status: "online", rating: 4.8 }); };
+  const login = async (phone: string) => { setDriver({ id: "drv_1000", name: "Driver", phone, status: "online", rating: 4.8 }); };
   const logout = () => setDriver(null);
   return <AuthContext.Provider value={{ driver, isAuthenticated: !!driver, login, logout }}>{children}</AuthContext.Provider>;
 }

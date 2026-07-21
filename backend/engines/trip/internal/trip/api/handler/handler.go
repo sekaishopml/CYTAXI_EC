@@ -201,3 +201,128 @@ func writeJSON(w http.ResponseWriter, status int, data any) {
 	w.WriteHeader(status)
 	json.NewEncoder(w).Encode(data)
 }
+
+// AcceptDriverRequest body para que el conductor acepte un viaje
+type AcceptDriverRequest struct {
+	TripID  string `json:"trip_id"`
+	DriverID string `json:"driver_id"`
+}
+
+// HandleAcceptDriver POST /trips/{trip_id}/accept o POST /trip/accept
+func (h *Handler) HandleAcceptDriver(w http.ResponseWriter, r *http.Request) {
+	var req AcceptDriverRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]any{"error": "invalid json"})
+		return
+	}
+	tripID := r.PathValue("trip_id")
+	if tripID == "" {
+		tripID = req.TripID
+	}
+	if tripID == "" || req.DriverID == "" {
+		writeJSON(w, http.StatusBadRequest, map[string]any{"error": "trip_id and driver_id required"})
+		return
+	}
+	if err := h.service.Accept(r.Context(), command.AcceptTrip{
+		TripID:  valueobject.TripID(tripID),
+		DriverID: valueobject.DriverID(req.DriverID),
+	}); err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]any{"error": err.Error()})
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"status": "accepted", "trip_id": tripID})
+}
+
+// StartTripRequest body para iniciar el viaje
+type StartTripRequest struct {
+	TripID  string `json:"trip_id"`
+	DriverID string `json:"driver_id"`
+}
+
+// HandleStartTrip POST /trips/{trip_id}/start o POST /trip/start
+func (h *Handler) HandleStartTrip(w http.ResponseWriter, r *http.Request) {
+	var req StartTripRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]any{"error": "invalid json"})
+		return
+	}
+	tripID := r.PathValue("trip_id")
+	if tripID == "" {
+		tripID = req.TripID
+	}
+	if tripID == "" {
+		writeJSON(w, http.StatusBadRequest, map[string]any{"error": "trip_id required"})
+		return
+	}
+	if err := h.service.Start(r.Context(), command.StartTrip{
+		TripID: valueobject.TripID(tripID),
+	}); err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]any{"error": err.Error()})
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"status": "in_progress", "trip_id": tripID})
+}
+
+// CompleteTripRequest body para finalizar el viaje
+type CompleteTripRequest struct {
+	TripID string `json:"trip_id"`
+}
+
+// HandleCompleteTrip POST /trips/{trip_id}/complete o POST /trip/finish
+func (h *Handler) HandleCompleteTrip(w http.ResponseWriter, r *http.Request) {
+	var req CompleteTripRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]any{"error": "invalid json"})
+		return
+	}
+	tripID := r.PathValue("trip_id")
+	if tripID == "" {
+		tripID = req.TripID
+	}
+	if tripID == "" {
+		writeJSON(w, http.StatusBadRequest, map[string]any{"error": "trip_id required"})
+		return
+	}
+	if err := h.service.Complete(r.Context(), command.CompleteTrip{
+		TripID: valueobject.TripID(tripID),
+	}); err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]any{"error": err.Error()})
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"status": "completed", "trip_id": tripID})
+}
+
+// LocationRequest body para actualizar la posición del conductor
+type LocationRequest struct {
+	TripID  string  `json:"trip_id"`
+	DriverID string  `json:"driver_id"`
+	Lat      float64 `json:"lat"`
+	Lng      float64 `json:"lng"`
+}
+
+// HandleLocation POST /trips/{trip_id}/location o POST /trip/location
+func (h *Handler) HandleLocation(w http.ResponseWriter, r *http.Request) {
+	var req LocationRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]any{"error": "invalid json"})
+		return
+	}
+	tripID := r.PathValue("trip_id")
+	if tripID == "" {
+		tripID = req.TripID
+	}
+	if tripID == "" || req.DriverID == "" {
+		writeJSON(w, http.StatusBadRequest, map[string]any{"error": "trip_id and driver_id required"})
+		return
+	}
+	if err := h.service.UpdateLocation(r.Context(), command.UpdateLocation{
+		TripID:  valueobject.TripID(tripID),
+		DriverID: valueobject.DriverID(req.DriverID),
+		Lat:      req.Lat,
+		Lng:      req.Lng,
+	}); err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]any{"error": err.Error()})
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"status": "ok", "trip_id": tripID})
+}

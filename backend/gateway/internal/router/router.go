@@ -47,10 +47,13 @@ func (r *GatewayRouter) RegisterRoute(service, method, path, targetService strin
 	target, _ := url.Parse(backendURL)
 	proxy := httputil.NewSingleHostReverseProxy(target)
 
-	// Calcular el prefijo a remover: "/api/v1/<engine>/" o "/api/v1/<engine>" (health)
-	// Path viene como "/api/v1/<engine>/<subpath>" o "/api/v1/<engine>/health"
-	// Necesitamos remover "/api/v1/<engine>" y dejar el "/" inicial o el subpath.
-	prefixToStrip := "/api/v1/" + service
+		// Calcular el prefijo a remover a partir del path registrado.
+		// El path viene como "/api/v1/<engine>/{path...}" o "/api/v1/<engine>s/{path...}".
+		// El prefijo a remover es la parte fija antes de "/{path...}".
+		prefixToStrip := strings.Split(path, "/{path...")[0]
+		if prefixToStrip == "" {
+			prefixToStrip = "/api/v1/" + service
+		}
 	originalDirector := proxy.Director
 	proxy.Director = func(req *http.Request) {
 		originalDirector(req)
@@ -89,11 +92,22 @@ func (r *GatewayRouter) RegisterRoutes() {
 
 	for engine, backend := range engines {
 		// Wildcard pattern para capturar sub-rutas (Go 1.22+)
+		// Registramos tanto la forma singular (/api/v1/<engine>/...) como la
+		// plural (/api/v1/<engine>s/...) porque los frontends usan ambas.
 		r.RegisterRoute(engine, "GET", "/api/v1/"+engine+"/{path...}", backend)
 		r.RegisterRoute(engine, "POST", "/api/v1/"+engine+"/{path...}", backend)
 		r.RegisterRoute(engine, "PUT", "/api/v1/"+engine+"/{path...}", backend)
 		r.RegisterRoute(engine, "DELETE", "/api/v1/"+engine+"/{path...}", backend)
 		r.RegisterRoute(engine, "GET", "/api/v1/"+engine+"/health", backend)
+
+		plural := engine + "s"
+		if plural != engine {
+			r.RegisterRoute(engine, "GET", "/api/v1/"+plural+"/{path...}", backend)
+			r.RegisterRoute(engine, "POST", "/api/v1/"+plural+"/{path...}", backend)
+			r.RegisterRoute(engine, "PUT", "/api/v1/"+plural+"/{path...}", backend)
+			r.RegisterRoute(engine, "DELETE", "/api/v1/"+plural+"/{path...}", backend)
+			r.RegisterRoute(engine, "GET", "/api/v1/"+plural+"/health", backend)
+		}
 	}
 
 	r.mux.HandleFunc("GET /health", r.Health)

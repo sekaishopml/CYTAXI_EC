@@ -1,4 +1,8 @@
-export type TripState = "pickup_select" | "input" | "confirm" | "searching" | "driver_found" | "in_progress" | "completed";
+import type { RideState, RideEvent } from "@cytaxi/ride-machine";
+import type { DriverPayload, FarePayload, RoutePayload } from "@cytaxi/events";
+
+export type { RideState, RideEvent };
+export type TripState = RideState;
 
 export interface Coordinates {
   lat: number;
@@ -12,42 +16,15 @@ export interface Place {
   lng: number;
 }
 
-export interface DriverInfo {
-  id: string;
-  name: string;
-  vehicle: string;
-  plate: string;
-  rating: number;
-  photo: string;
-  eta_seconds: number;
-  lat?: number;
-  lng?: number;
-}
+export type DriverInfo = DriverPayload;
 
-export interface FareBreakdown {
-  base: number;
-  distance: number;
-  time: number;
-  subtotal: number;
-  total: number;
-  currency: string;
-  distance_km: number;
-  eta_minutes: number;
-}
+export type FareBreakdown = FarePayload;
 
 export interface TrackingUpdate {
   type: string;
   trip_id: string;
   status: string;
-  driver?: {
-    id: string;
-    name: string;
-    vehicle: string;
-    plate: string;
-    lat: number;
-    lng: number;
-    rating: number;
-  };
+  driver?: DriverPayload;
   eta_seconds?: number;
   timestamp: string;
 }
@@ -62,3 +39,5 @@ export interface TripRequest {
   dest_lat: number;
   dest_lng: number;
 }
+
+export type { RoutePayload };

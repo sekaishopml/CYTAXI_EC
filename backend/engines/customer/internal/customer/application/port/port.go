@@ -3,8 +3,7 @@ package port
 import (
 	"context"
 
-	"github.com/sekaishopml/cytaxi/backend/engines/customer/internal/customer/domain/customer"
-	"github.com/sekaishopml/cytaxi/backend/engines/customer/internal/customer/domain/context"
+	cctx "github.com/sekaishopml/cytaxi/backend/engines/customer/internal/customer/domain/context"
 	"github.com/sekaishopml/cytaxi/backend/engines/customer/internal/customer/domain/favorite"
 	"github.com/sekaishopml/cytaxi/backend/engines/customer/internal/customer/domain/preference"
 	"github.com/sekaishopml/cytaxi/backend/engines/customer/internal/customer/domain/profile"
@@ -27,8 +26,8 @@ type FavoritePlaceInputPort interface {
 }
 
 type CustomerContextInputPort interface {
-	GetContext(ctx context.Context, customerID string) (*context.CustomerContext, error)
-	UpdateContext(ctx context.Context, ctxData *context.CustomerContext) error
+	GetContext(ctx context.Context, customerID string) (*cctx.CustomerContext, error)
+	UpdateContext(ctx context.Context, ctxData *cctx.CustomerContext) error
 }
 
 type CustomerProfileOutputPort interface {

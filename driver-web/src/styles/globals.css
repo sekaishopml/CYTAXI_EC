@@ -1,45 +1,77 @@
+@import "@cytaxi/fonts";
+@import "@cytaxi/design-tokens/src/globals.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --primary: #000000;
-    --accent: #16a34a;
-    --danger: #dc2626;
-    --warning: #f59e0b;
-    --background: #f8f9fa;
-    --surface: #ffffff;
-    --foreground: #0a0a0a;
-    --muted: #e5e7eb;
-    --muted-foreground: #6b7280;
-    --border: #d1d5db;
-    --radius: 0.5rem;
     --sidebar-width: 240px;
+    --surface: #ffffff;
+    --background: #f4f6f8;
+    --border: #e6e9ed;
+    --muted-foreground: #5b6573;
+    --accent: #00b36b;
   }
-  .dark {
-    --primary: #ffffff;
-    --background: #0f172a;
-    --surface: #1e293b;
-    --foreground: #f1f5f9;
-    --muted: #334155;
-    --muted-foreground: #94a3b8;
-    --border: #334155;
+  body {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background: var(--background);
+    color: #0f1419;
+    margin: 0;
   }
-  * { @apply border-border; }
-  body { @apply bg-background text-foreground font-sans antialiased; }
 }
 
 @layer components {
-  .btn-primary { @apply bg-primary text-white px-5 py-2.5 rounded-lg font-medium hover:opacity-90 transition disabled:opacity-50; }
-  .btn-accent { @apply bg-accent text-white px-5 py-2.5 rounded-lg font-medium hover:opacity-90 transition; }
-  .btn-danger { @apply bg-danger text-white px-5 py-2.5 rounded-lg font-medium hover:opacity-90 transition; }
-  .card { @apply bg-surface border border-border rounded-xl p-5 shadow-sm; }
-  .input { @apply w-full px-4 py-2.5 rounded-lg border border-border bg-surface focus:outline-none focus:ring-2 focus:ring-primary/20; }
-  .badge { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium; }
-  .badge-success { @apply badge bg-accent/10 text-accent; }
-  .badge-warning { @apply badge bg-warning/10 text-warning; }
-  .badge-danger { @apply badge bg-danger/10 text-danger; }
-  .sidebar-link { @apply flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm hover:bg-muted transition-colors; }
-  .sidebar-link-active { @apply sidebar-link bg-primary/10 text-primary font-medium; }
+  .card {
+    background: var(--surface);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    padding: 16px;
+    box-shadow: 0 1px 4px rgba(15,20,25,0.06);
+  }
+  .card:hover { box-shadow: 0 4px 16px rgba(15,20,25,0.10); }
+  .bg-surface { background: var(--surface); }
+  .bg-background { background: var(--background); }
+  .bg-muted { background: #eef1f4; }
+  .border-border { border-color: var(--border); }
+  .border-r { border-right-width: 1px; border-right-style: solid; border-color: var(--border); }
+  .text-muted-foreground { color: var(--muted-foreground); }
+  .text-muted { color: var(--muted-foreground); }
+  .text-accent { color: var(--accent); }
+  .bg-accent { background: var(--accent); }
+  .btn-primary {
+    background: var(--accent); color: #fff; border: none;
+    border-radius: 12px; padding: 10px 16px; font-weight: 600; cursor: pointer;
+  }
+  .btn-secondary {
+    background: #eef1f4; color: #0f1419; border: none;
+    border-radius: 12px; padding: 10px 16px; font-weight: 600; cursor: pointer;
+  }
+  .btn-danger {
+    background: #ef4444; color: #fff; border: none;
+    border-radius: 12px; padding: 10px 16px; font-weight: 600; cursor: pointer;
+  }
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600;
+  }
+  .badge-success { background: rgba(0,179,107,0.10); color: #008552; }
+  .badge-danger { background: rgba(239,68,68,0.10); color: #ef4444; }
+  .badge-warning { background: #fef3c7; color: #92400e; }
+  .sidebar-link {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 12px; border-radius: 10px;
+    color: var(--muted-foreground); text-decoration: none; font-size: 14px; font-weight: 500;
+    transition: background 0.15s, color 0.15s;
+  }
+  .sidebar-link:hover { background: #eef1f4; color: #0f1419; }
+  .sidebar-link-active {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 12px; border-radius: 10px;
+    background: rgba(0,179,107,0.10); color: #008552;
+    text-decoration: none; font-size: 14px; font-weight: 600;
+  }
 }

@@ -26,6 +26,7 @@ type Trip struct {
 	CompletedAt  *time.Time              `json:"completed_at,omitempty"`
 	CancelledAt  *time.Time              `json:"cancelled_at,omitempty"`
 	CancelReason string                  `json:"cancel_reason,omitempty"`
+	CurrentLocation *valueobject.Coordinates `json:"current_location,omitempty"`
 }
 
 type TripEstimate struct {
@@ -74,8 +75,15 @@ func (t *Trip) StartSearching() error {
 	return nil
 }
 
-func (t *Trip) AcceptTrip() error {
-	if t.Status != valueobject.StatusDriverAssigned {
+func (t *Trip) AcceptTrip(driverID valueobject.DriverID) error {
+	switch t.Status {
+	case valueobject.StatusSearching:
+		t.DriverID = driverID
+		t.Status = valueobject.StatusDriverAssigned
+	case valueobject.StatusDriverAssigned:
+		// already assigned; ensure driver matches
+		t.DriverID = driverID
+	default:
 		return fmt.Errorf("cannot accept in status %s", t.Status)
 	}
 	t.Status = valueobject.StatusAccepted
@@ -110,6 +118,16 @@ func (t *Trip) StartTrip() error {
 	t.Status = valueobject.StatusStarted
 	t.StartedAt = &now
 	t.UpdatedAt = now
+	return nil
+}
+
+func (t *Trip) UpdateLocation(lat, lng float64) error {
+	if !t.IsActive() {
+		return fmt.Errorf("cannot update location in status %s", t.Status)
+	}
+	loc := valueobject.Coordinates{Lat: lat, Lng: lng}
+	t.CurrentLocation = &loc
+	t.UpdatedAt = time.Now()
 	return nil
 }
 

@@ -8,8 +8,6 @@ import (
 	"time"
 
 	"github.com/sekaishopml/cytaxi/backend/engines/trip/internal/trip/application/port"
-	"github.com/sekaishopml/cytaxi/backend/engines/trip/internal/trip/application/query"
-	"github.com/sekaishopml/cytaxi/backend/engines/trip/internal/trip/domain/valueobject"
 )
 
 type DriverLocation struct {
@@ -251,10 +249,4 @@ func (ts *TrackingServer) HandleWebSocket(w http.ResponseWriter, r *http.Request
 
 func (ts *TrackingServer) HandleHealth(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{"status": "ok", "service": "trip-tracking"})
-}
-
-func writeJSON(w http.ResponseWriter, status int, data any) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(data)
 }

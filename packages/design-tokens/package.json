@@ -1,0 +1,17 @@
+{
+  "name": "@cytaxi/design-tokens",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./colors": "./src/colors.ts",
+    "./typography": "./src/typography.ts",
+    "./spacing": "./src/spacing.ts",
+    "./shadows": "./src/shadows.ts",
+    "./breakpoints": "./src/breakpoints.ts",
+    "./motion": "./src/motion.ts",
+    "./src/globals.css": "./src/globals.css"
+  }
+}

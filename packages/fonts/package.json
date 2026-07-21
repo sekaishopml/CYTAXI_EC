@@ -1,0 +1,11 @@
+{
+  "name": "@cytaxi/fonts",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./index.css",
+  "exports": {
+    ".": "./index.css",
+    "./geist": "./geist.css",
+    "./inter": "./inter.css"
+  }
+}

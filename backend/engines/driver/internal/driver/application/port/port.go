@@ -4,11 +4,8 @@ import (
 	"context"
 
 	"github.com/sekaishopml/cytaxi/backend/engines/driver/internal/driver/domain/availability"
-	"github.com/sekaishopml/cytaxi/backend/engines/driver/internal/driver/domain/capability"
-	"github.com/sekaishopml/cytaxi/backend/engines/driver/internal/driver/domain/document"
 	"github.com/sekaishopml/cytaxi/backend/engines/driver/internal/driver/domain/driver"
 	"github.com/sekaishopml/cytaxi/backend/engines/driver/internal/driver/domain/license"
-	"github.com/sekaishopml/cytaxi/backend/engines/driver/internal/driver/domain/preference"
 	"github.com/sekaishopml/cytaxi/backend/engines/driver/internal/driver/domain/valueobject"
 	"github.com/sekaishopml/cytaxi/backend/engines/driver/internal/driver/domain/vehicle"
 )

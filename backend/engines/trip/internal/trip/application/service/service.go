@@ -34,6 +34,9 @@ func NewTripService(
 
 func (s *TripService) Create(ctx context.Context, cmd command.CreateTrip) (*trip.Trip, error) {
 	t := trip.NewTrip(cmd.CustomerID, cmd.Passenger, cmd.Pickup, cmd.Destination)
+	if err := t.StartSearching(); err != nil {
+		return nil, err
+	}
 	if err := s.tripRepo.Save(ctx, t); err != nil {
 		return nil, err
 	}
@@ -68,7 +71,7 @@ func (s *TripService) Accept(ctx context.Context, cmd command.AcceptTrip) error 
 	if err != nil {
 		return fmt.Errorf("find trip: %w", err)
 	}
-	if err := t.AcceptTrip(); err != nil {
+	if err := t.AcceptTrip(cmd.DriverID); err != nil {
 		return err
 	}
 	return s.tripRepo.Update(ctx, t)
@@ -171,6 +174,17 @@ func (s *TripService) ChangeDestination(ctx context.Context, cmd command.ChangeD
 		return fmt.Errorf("find trip: %w", err)
 	}
 	if err := t.ChangeDestination(cmd.Destination); err != nil {
+		return err
+	}
+	return s.tripRepo.Update(ctx, t)
+}
+
+func (s *TripService) UpdateLocation(ctx context.Context, cmd command.UpdateLocation) error {
+	t, err := s.tripRepo.FindByID(ctx, cmd.TripID)
+	if err != nil {
+		return fmt.Errorf("find trip: %w", err)
+	}
+	if err := t.UpdateLocation(cmd.Lat, cmd.Lng); err != nil {
 		return err
 	}
 	return s.tripRepo.Update(ctx, t)

@@ -1,0 +1,60 @@
+@import "@cytaxi/fonts";
+@import "@cytaxi/design-tokens/src/globals.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --surface: #ffffff;
+    --background: #f4f6f8;
+    --border: #e6e9ed;
+    --muted-foreground: #5b6573;
+    --accent: #00b36b;
+    --text: #0f1419;
+    --card: #ffffff;
+  }
+  body {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background: var(--background);
+    color: var(--text);
+    margin: 0;
+  }
+}
+
+@layer components {
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    padding: 16px;
+    box-shadow: 0 1px 4px rgba(15,20,25,0.06);
+  }
+  .card:hover { box-shadow: 0 4px 16px rgba(15,20,25,0.10); }
+  .bg-surface { background: var(--surface); }
+  .bg-background { background: var(--background); }
+  .bg-muted { background: #eef1f4; }
+  .border-border { border-color: var(--border); }
+  .text-muted-foreground { color: var(--muted-foreground); }
+  .text-muted { color: var(--muted-foreground); }
+  .text-accent { color: var(--accent); }
+  .bg-accent { background: var(--accent); }
+  .btn-primary {
+    background: var(--accent); color: #fff; border: none;
+    border-radius: 12px; padding: 10px 16px; font-weight: 600; cursor: pointer;
+  }
+  .btn-secondary {
+    background: #eef1f4; color: #0f1419; border: none;
+    border-radius: 12px; padding: 10px 16px; font-weight: 600; cursor: pointer;
+  }
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600;
+  }
+  .badge-success { background: rgba(0,179,107,0.10); color: #008552; }
+  .badge-danger { background: rgba(239,68,68,0.10); color: #ef4444; }
+  .badge-warning { background: #fef3c7; color: #92400e; }
+}

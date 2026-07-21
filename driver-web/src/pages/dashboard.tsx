@@ -1,6 +1,7 @@
 import React from "react";
 import { AvailabilityToggle } from "@/components/ui/availability_toggle";
 import { TripQueue } from "@/components/ui/trip_queue";
+import { TripCard } from "@/components/ui/trip_card";
 import { useAvailability } from "@/contexts/availability";
 import { useTrip } from "@/contexts/trip";
 import { useAuth } from "@/contexts/auth";
@@ -20,7 +21,7 @@ export default function DashboardPage() {
       {current && (
         <section>
           <h2 className="text-lg font-semibold mb-3">Current Trip</h2>
-          <div className="card bg-accent/5 border-accent"><TripCard {...current} /></div>
+          <div className="card bg-accent/5 border-accent"><TripCard id={current.id} pickup={current.pickup} destination={current.destination} fare={current.fare} eta={current.eta} status={current.status} /></div>
         </section>
       )}
       {!current && available && (

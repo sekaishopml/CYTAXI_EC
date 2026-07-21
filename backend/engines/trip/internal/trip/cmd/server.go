@@ -54,7 +54,7 @@ func (s *TripServer) HandleCreateTrip(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	if err := s.service.Create(r.Context(), cmd); err != nil {
+	if _, err := s.service.Create(r.Context(), cmd); err != nil {
 		s.logger.Error("create trip failed", "error", err)
 		http.Error(w, `{"error":"trip creation failed"}`, http.StatusInternalServerError)
 		return

@@ -22,6 +22,7 @@ type TripService interface {
 	AddStop(ctx context.Context, cmd command.AddStop) error
 	RemoveStop(ctx context.Context, cmd command.RemoveStop) error
 	ChangeDestination(ctx context.Context, cmd command.ChangeDestination) error
+	UpdateLocation(ctx context.Context, cmd command.UpdateLocation) error
 	GetTrip(ctx context.Context, q query.GetTrip) (*query.TripResult, error)
 	GetTripHistory(ctx context.Context, q query.GetTripHistory) (*query.TripListResult, error)
 	GetActiveTrips(ctx context.Context, q query.GetActiveTrips) (*query.TripListResult, error)

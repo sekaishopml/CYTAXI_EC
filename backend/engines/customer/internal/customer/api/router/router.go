@@ -1,7 +1,6 @@
 package router
 
 import (
-	"log/slog"
 	"net/http"
 
 	"github.com/sekaishopml/cytaxi/backend/engines/customer/internal/customer/api/handler"

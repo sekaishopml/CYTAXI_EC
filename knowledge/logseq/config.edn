@@ -1,0 +1,7 @@
+;; Logseq config for CYTAXI knowledge graph
+{:scientific-all-pages true
+ :scientific-all-pages-numbered true
+ :default-home-pages-page "_index"
+ :preferred-language "es"
+ :journal/page-title-format "yyyy-MM-dd"
+ :enable-tools false}
