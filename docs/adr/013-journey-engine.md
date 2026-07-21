@@ -52,7 +52,7 @@ Implementar un **Journey Engine** como única fuente de verdad, con:
 - `routes.ts`: `decodePolyline` ahora es exportado (era privado)
 - `markers.ts`: Fix tipos `heading` (number no undefined), fix `rotation` → `labelOrigin`
 
-### miniweb
+### travel
 - **Nuevo hook** `useJourneyEngine` — 376 líneas, state + FSM + API + persistencia
 - **Nuevo componente** `BottomSheet` — sheet persistente con variantes de animación
 - **Nuevo componente** `TripTimeline` — 8 pasos visuales con dots + líneas + labels

@@ -8,7 +8,7 @@ Todos los subdominios apuntan a la misma IP; nginx enruta por `Host`.
 | Subdominio | App | Puerto local | systemd unit | Puerto gateway |
 |---|---|---|---|---|
 | `sekaishopec.com` / `www` | landing (nginx root) | — | nginx | — |
-| `travel.sekaishopec.com` | App clientes (miniweb) | 3000 | `cytaxi-miniweb` | — |
+| `travel.sekaishopec.com` | App clientes (travel) | 3000 | `cytaxi-travel` | — |
 | `driver.sekaishopec.com` | Driver Web | 3002 | `cytaxi-driver-web` | — |
 | `admin.sekaishopec.com` | Admin Dashboard | 3003 | `cytaxi-dashboard` | — |
 | `status.sekaishopec.com` | Status Page | 3001 | `cytaxi-status` | — |
@@ -54,7 +54,7 @@ systemctl status cytaxi-*
 journalctl -u cytaxi-trip -f
 
 # Rebuild + restart un servicio frontend
-cd /home/CYTAXI_EC/miniweb && npm run build && systemctl restart cytaxi-miniweb
+cd /home/CYTAXI_EC/travel && npm run build && systemctl restart cytaxi-travel
 
 # Rebuild + restart un engine Go
 cd /home/CYTAXI_EC/backend/engines/trip && \

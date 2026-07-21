@@ -5,12 +5,12 @@
 **Decision Makers:** Platform Engineering Team
 
 ## Context
-CYTAXI has three frontends (miniweb, driver-web, dashboard), shared packages, and a Go backend. Each frontend previously managed its own copy of UI components, types, and utilities, leading to duplication and drift.
+CYTAXI has three frontends (travel, driver-web, dashboard), shared packages, and a Go backend. Each frontend previously managed its own copy of UI components, types, and utilities, leading to duplication and drift.
 
 ## Decision
 Use npm workspaces monorepo with:
 - `packages/*` for shared libraries (design-tokens, ui, events, api-client, etc.)
-- Each app (miniweb, driver-web, dashboard) imports shared packages via workspace references
+- Each app (travel, driver-web, dashboard) imports shared packages via workspace references
 - Single `node_modules` at root
 
 ## Consequences

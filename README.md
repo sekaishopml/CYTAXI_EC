@@ -69,7 +69,7 @@ CYTAXI_EC/
 │   ├── validation/                  # Validation
 │   └── version/                     # Version info
 │
-├── miniweb/                         # Miniweb frontend — Next.js 14 (App Router)
+├── travel/                          # Travel frontend — Next.js 14 (App Router)
 │   ├── src/
 │   │   ├── app/                     # App Router pages
 │   │   │   ├── layout.tsx

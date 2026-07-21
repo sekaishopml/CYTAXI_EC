@@ -1,4 +1,4 @@
-# Frontend: Miniweb
+# Frontend: Travel (formerly Miniweb)
 
 ## Stack
 
@@ -23,7 +23,7 @@
 ## Estructura
 
 ```
-miniweb/
+travel/
   src/
     app/              → App Router pages (Next.js 14)
     components/       → UI components

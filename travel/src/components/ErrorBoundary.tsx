@@ -31,7 +31,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           events: [{ event: "REACT_ERROR", error: error.message, stack: error.stack, timestamp: Date.now() }],
-          source: "miniweb",
+          source: "travel",
         }),
         keepalive: true,
       });

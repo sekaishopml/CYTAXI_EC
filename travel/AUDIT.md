@@ -1,6 +1,6 @@
 # AUDITORÍA FRONT-END CYTAXI — Control de calidad total
 
-> Generado: julio 2026 · Cobertura: 100% archivos en `miniweb/src/`
+> Generado: julio 2026 · Cobertura: 100% archivos en `travel/src/`
 > Organizado por: archivo → botones → animaciones → responsive → colores → issues
 
 ---

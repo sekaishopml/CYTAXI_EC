@@ -7,7 +7,7 @@
 - **Design**: Cobalt theme (Hallmark) — `#3b82f6` accent, Space Grotesk + Inter + JetBrains Mono
 
 ## Where to find things
-- `miniweb/` — Next.js frontend app
+- `travel/` — Next.js frontend app
 - `backend/engines/geospatial/` — Go geospatial engine (routing, reverse geocode)
 - `backend/gateway/` — API gateway
 - `packages/` — shared packages (ride-machine, map-engine, design-tokens)
@@ -15,7 +15,7 @@
 - `deploy/`, `infra/` — deployment and infrastructure
 
 ## Key conventions
-- Run `npm run build` from `miniweb/` before deploying
-- Deploy: `systemctl restart cytaxi-miniweb` (frontend), `systemctl restart cytaxi-geospatial` (backend)
+- Run `npm run build` from `travel/` before deploying
+- Deploy: `systemctl restart cytaxi-travel` (frontend), `systemctl restart cytaxi-geospatial` (backend)
 - State machine lives in `packages/ride-machine/`; transitions in `useJourneyEngine.ts`
 - All UI text in Spanish

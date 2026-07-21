@@ -41,13 +41,13 @@ Workflows en `.github/workflows/`:
   - `gateway` — Go API Gateway
   - `geospatial` — Geospatial Engine
   - `postgres` — PostgreSQL
-  - `miniweb` — Next.js frontend (dev)
+  - `travel` — Next.js frontend (dev)
 
 ## Deploy Manual
 
 ```bash
 # Frontend
-cd miniweb && npm run build && systemctl restart cytaxi-miniweb
+cd travel && npm run build && systemctl restart cytaxi-travel
 
 # Backend
 systemctl restart cytaxi-geospatial

@@ -37,7 +37,7 @@ jobs:
       - run: npm ci
       - run: npm run lint --workspaces --if-present
       - name: TypeScript check
-        run: npx tsc --noEmit --project miniweb/tsconfig.json 2>/dev/null || true
+        run: npx tsc --noEmit --project travel/tsconfig.json 2>/dev/null || true
         continue-on-error: true
 
   test-backend:
@@ -90,7 +90,7 @@ jobs:
           done
       - name: Build Frontends
         run: |
-          docker build -f miniweb/Dockerfile -t cytaxi-miniweb:latest ./miniweb
+          docker build -f travel/Dockerfile -t cytaxi-travel:latest ./travel
           docker build -f driver-web/Dockerfile -t cytaxi-driver-web:latest ./driver-web
           docker build -f dashboard/Dockerfile -t cytaxi-dashboard:latest ./dashboard
 

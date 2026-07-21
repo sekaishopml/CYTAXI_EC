@@ -4,7 +4,7 @@ A diferencia del Blueprint (que es pura especificación), CYTAXI_EC ya tiene 50 
 
 ## Stack Tecnológico Real
 
-### Frontend (miniweb/)
+### Frontend (travel/)
 - **Framework**: Next.js 14 (App Router)
 - **Lenguaje**: TypeScript
 - **Mapas**: Leaflet (OpenStreetMap) + OpenStreetMap Nominatim
@@ -48,7 +48,7 @@ A diferencia del Blueprint (que es pura especificación), CYTAXI_EC ya tiene 50 
 |----------|-----------|-----------|
 | Gateway | ✅ Especificado | ✅ Implementado (chi router) |
 | Maps/Geospatial | ✅ Especificado | ✅ Implementado (OSRM + Nominatim) |
-| Trip | ✅ Especificado | ⚠️ Parcial (state machine en miniweb) |
+| Trip | ✅ Especificado | ⚠️ Parcial (state machine en travel) |
 | Pricing | ✅ Especificado | ❌ No implementado |
 | Dispatch | ✅ Especificado | ❌ No implementado |
 | Auth | ✅ Especificado | ❌ No implementado |
@@ -62,7 +62,7 @@ A diferencia del Blueprint (que es pura especificación), CYTAXI_EC ya tiene 50 
 
 ## Data Flow Actual (Miniweb)
 
-1. Usuario abre miniweb → state machine inicia en `pickup_select`
+1. Usuario abre travel → state machine inicia en `pickup_select`
 2. Mapa detecta GPS → reverse geocode → selección de pickup
 3. Usuario confirma pickup → busca destino → selecciona → confirma
 4. Trip request → driver matching → tracking → payment → rating

@@ -51,7 +51,7 @@ class TelemetryCollector {
         fetch("/api/v1/telemetry", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ events: payload, source: "miniweb" }),
+          body: JSON.stringify({ events: payload, source: "travel" }),
           keepalive: true,
         }).catch(() => {});
       }

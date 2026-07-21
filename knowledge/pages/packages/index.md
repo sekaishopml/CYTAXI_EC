@@ -14,7 +14,7 @@ pickup_select → destination_select → trip_preview → requesting
 ```
 
 - Define estados, transiciones, y side-effects
-- Usado por el frontend (miniweb) para manejar el flujo del viaje
+- Usado por el frontend (travel) para manejar el flujo del viaje
 - Integrado via `useJourneyEngine` hook
 
 ## `@cytaxi/map-engine`
